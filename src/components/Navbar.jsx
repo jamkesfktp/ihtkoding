@@ -1,0 +1,52 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaHospital, FaBars, FaTimes } from 'react-icons/fa';
+import './Navbar.css';
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const navLinks = [
+    { path: '/', label: 'Home' },
+    { path: '/jadwal', label: 'Jadwal' },
+    { path: '/materi', label: 'Materi' },
+    { path: '/soal', label: 'Soal' },
+    { path: '/penugasan', label: 'Penugasan' },
+  ];
+
+  return (
+    <header className="navbar glass">
+      <div className="container nav-container">
+        <Link to="/" className="nav-logo">
+          <FaHospital className="logo-icon" />
+          <span className="logo-text">Koding Sardjito</span>
+        </Link>
+        
+        <div className="menu-icon" onClick={toggleMenu}>
+          {isOpen ? <FaTimes /> : <FaBars />}
+        </div>
+
+        <nav className={`nav-menu ${isOpen ? 'active' : ''}`}>
+          <ul className="nav-list">
+            {navLinks.map((link) => (
+              <li key={link.path} className="nav-item">
+                <Link 
+                  to={link.path} 
+                  className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
