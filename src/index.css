@@ -1,16 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
 
 :root {
-  /* Colors */
+  /* Colors - Tema Kemenkes */
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
-  --color-primary: #0ea5e9;
-  --color-primary-dark: #0284c7;
-  --color-primary-light: #e0f2fe;
+  --color-primary: #00A6A6;
+  --color-primary-dark: #007373;
+  --color-primary-light: #E0F7F7;
   --color-secondary: #0f172a;
   --color-text: #334155;
   --color-text-light: #64748b;
-  --color-accent: #38bdf8;
+  --color-accent: #00CFCF;
   --color-border: #e2e8f0;
   
   /* Shadows */

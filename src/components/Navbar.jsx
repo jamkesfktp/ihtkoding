@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaHospital, FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import logoKemenkes from '../assets/logo-kemenkes.png';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -21,7 +22,7 @@ const Navbar = () => {
     <header className="navbar glass">
       <div className="container nav-container">
         <Link to="/" className="nav-logo">
-          <FaHospital className="logo-icon" />
+          <img src={logoKemenkes} alt="Logo Kemenkes" style={{ height: '40px', width: 'auto' }} />
           <span className="logo-text">Koding Sardjito</span>
         </Link>
         

@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaFilePowerpoint, FaFileWord, FaDownload } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaFilePowerpoint, FaFileWord, FaDownload, FaLaptopCode } from 'react-icons/fa';
 import { soalList } from '../data';
 
 const Soal = () => {
@@ -33,19 +34,26 @@ const Soal = () => {
                     {isWord ? 'Dokumen Evaluasi' : 'Presentasi / Soal Evaluasi'}
                   </p>
                 </div>
-                <a 
-                  href={`/downloads/Soal/${soal}`} 
-                  download
-                  className="btn btn-outline"
-                  style={{ 
-                    padding: '0.5rem 1rem', flexShrink: 0, 
-                    borderColor: isWord ? '#3b82f6' : '#e11d48', 
-                    color: isWord ? '#3b82f6' : '#e11d48' 
-                  }}
-                  title="Unduh Soal"
-                >
-                  <FaDownload />
-                </a>
+                <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                  {isWord && (
+                    <Link to="/quiz" className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                      <FaLaptopCode /> Kerjakan Online
+                    </Link>
+                  )}
+                  <a 
+                    href={`/downloads/Soal/${soal}`} 
+                    download
+                    className="btn btn-outline"
+                    style={{ 
+                      padding: '0.5rem 1rem', 
+                      borderColor: isWord ? '#3b82f6' : '#e11d48', 
+                      color: isWord ? '#3b82f6' : '#e11d48' 
+                    }}
+                    title="Unduh Soal"
+                  >
+                    <FaDownload />
+                  </a>
+                </div>
               </div>
             );
           })}

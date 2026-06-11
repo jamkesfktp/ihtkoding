@@ -6,6 +6,7 @@ import Jadwal from './pages/Jadwal';
 import Materi from './pages/Materi';
 import Soal from './pages/Soal';
 import Penugasan from './pages/Penugasan';
+import Quiz from './pages/Quiz';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/jadwal" element={<Jadwal />} />
             <Route path="/materi" element={<Materi />} />
             <Route path="/soal" element={<Soal />} />
+            <Route path="/quiz" element={<Quiz />} />
             <Route path="/penugasan" element={<Penugasan />} />
           </Routes>
         </main>
