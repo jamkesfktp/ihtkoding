@@ -42,6 +42,9 @@ const Register = () => {
 
       // Cek apakah admin
       const isAdmin = formData.username.toLowerCase() === 'admin' || formData.username.toLowerCase() === 'fasilitator';
+      
+      // Auto approve for admins, false for others
+      const isApproved = isAdmin ? true : false;
 
       // Save user details to Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -50,10 +53,16 @@ const Register = () => {
         angkatan: formData.angkatan,
         kelompok: formData.kelompok,
         username: formData.username.trim().toLowerCase(),
-        isAdmin: isAdmin
+        isAdmin: isAdmin,
+        isApproved: isApproved,
+        createdAt: new Date().toISOString()
       });
 
-      navigate('/materi');
+      if (isApproved) {
+        navigate('/materi');
+      } else {
+        navigate('/menunggu-persetujuan');
+      }
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {

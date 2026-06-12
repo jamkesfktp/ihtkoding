@@ -17,8 +17,10 @@ import Leaderboard from './pages/Leaderboard';
 import QuizMpi1 from './pages/QuizMpi1';
 import FasilitatorReview from './pages/FasilitatorReview';
 import AdminDashboard from './pages/AdminDashboard';
+import ManajemenUser from './pages/ManajemenUser';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import MenungguPersetujuan from './pages/MenungguPersetujuan';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -35,6 +37,7 @@ function App() {
               <Route path="/jadwal" element={<Jadwal />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/menunggu-persetujuan" element={<MenungguPersetujuan />} />
               
               {/* Protected Routes */}
               <Route path="/materi" element={<ProtectedRoute><Materi /></ProtectedRoute>} />
@@ -53,6 +56,7 @@ function App() {
               {/* Admin Routes */}
               <Route path="/fasilitator-review" element={<ProtectedRoute requireAdmin={true}><FasilitatorReview /></ProtectedRoute>} />
               <Route path="/admin-dashboard" element={<ProtectedRoute requireAdmin={true}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/manajemen-user" element={<ProtectedRoute requireAdmin={true}><ManajemenUser /></ProtectedRoute>} />
             </Routes>
           </main>
           <footer className="footer">

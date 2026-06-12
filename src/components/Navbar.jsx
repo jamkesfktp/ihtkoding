@@ -30,6 +30,7 @@ const Navbar = () => {
     { path: '/leaderboard', label: 'Leaderboard' },
     { path: '/fasilitator-review', label: 'Review Fasilitator', adminOnly: true },
     { path: '/admin-dashboard', label: 'Admin Dashboard', adminOnly: true },
+    { path: '/manajemen-user', label: 'Manajemen User', adminOnly: true },
   ];
 
   return (

@@ -9,6 +9,11 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
     return <Navigate to="/login" />;
   }
 
+  // Jika data user sudah ada, cek apakah dia sudah diapprove
+  if (userData && userData.isApproved === false) {
+    return <Navigate to="/menunggu-persetujuan" />;
+  }
+
   if (requireAdmin && userData && !userData.isAdmin) {
     return <Navigate to="/" />; // Redirect non-admins trying to access admin pages
   }
