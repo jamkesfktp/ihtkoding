@@ -9,6 +9,9 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const navigate = useNavigate();
   const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [participantName, setParticipantName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
   const handleInputChange = (questionId, value) => {
