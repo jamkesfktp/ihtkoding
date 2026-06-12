@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [isFasilDropdownOpen, setIsFasilDropdownOpen] = useState(false);
   const location = useLocation();
