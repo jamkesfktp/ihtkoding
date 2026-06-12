@@ -7,7 +7,6 @@ import Materi from './pages/Materi';
 import Penugasan from './pages/Penugasan';
 import Quiz from './pages/Quiz';
 import QuizCaseStudy from './pages/QuizCaseStudy';
-import { quizDataMpi1 } from './data/quizDataMpi1';
 import { quizDataMpi2 } from './data/quizDataMpi2';
 import { quizDataMpi3 } from './data/quizDataMpi3';
 import { quizDataMpi4 } from './data/quizDataMpi4';
@@ -15,6 +14,8 @@ import { quizDataPreTest } from './data/quizDataPreTest';
 import { quizDataPostTest } from './data/quizDataPostTest';
 import PenugasanMpi5 from './pages/PenugasanMpi5';
 import Leaderboard from './pages/Leaderboard';
+import QuizMpi1 from './pages/QuizMpi1';
+import FasilitatorReview from './pages/FasilitatorReview';
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
             <Route path="/jadwal" element={<Jadwal />} />
             <Route path="/materi" element={<Materi />} />
             <Route path="/quiz" element={<Quiz />} />
-            <Route path="/quiz-mpi1" element={<QuizCaseStudy quizData={quizDataMpi1} />} />
+            <Route path="/fasilitator-review" element={<FasilitatorReview />} />
+            <Route path="/quiz-mpi1" element={<QuizMpi1 />} />
             <Route path="/quiz-mpi2" element={<QuizCaseStudy quizData={quizDataMpi2} />} />
             <Route path="/quiz-mpi3" element={<QuizCaseStudy quizData={quizDataMpi3} />} />
             <Route path="/quiz-mpi4" element={<QuizCaseStudy quizData={quizDataMpi4} />} />

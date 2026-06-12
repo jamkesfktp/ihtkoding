@@ -16,6 +16,7 @@ const Navbar = () => {
     { path: '/materi', label: 'Materi' },
     { path: '/penugasan', label: 'Penugasan' },
     { path: '/leaderboard', label: 'Leaderboard' },
+    { path: '/fasilitator-review', label: 'Review Fasilitator' },
   ];
 
   return (
@@ -38,6 +39,7 @@ const Navbar = () => {
                   to={link.path} 
                   className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
                   onClick={() => setIsOpen(false)}
+                  style={link.path === '/fasilitator-review' ? { color: '#f59e0b', fontWeight: 'bold' } : {}}
                 >
                   {link.label}
                 </Link>

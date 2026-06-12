@@ -54,38 +54,43 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
     try {
       // Hitung Skor
       let calculatedScore = 0;
-      let isNumericQuiz = quizData.cases.some(c => c.questions.some(q => q.type === 'number'));
-
-      if (isNumericQuiz) {
-        let totalSum = 0;
-        quizData.cases.forEach(c => {
-          c.questions.forEach(q => {
-            if (q.type === 'number') {
-              totalSum += parseInt(answers[q.id]) || 0;
-            }
-          });
-        });
-        calculatedScore = Math.round(totalSum / quizData.cases.length);
+      
+      if (quizData.isManualScore) {
+        calculatedScore = "Pending";
       } else {
-        let correctCount = 0;
-        let totalWithAnswers = 0;
-        quizData.cases.forEach(c => {
-          c.questions.forEach(q => {
-            if (q.answer) {
-              totalWithAnswers++;
-              let userAnswer = (answers[q.id] || '').replace(/\s+/g, '').toUpperCase();
-              let correctAnswer = q.answer.replace(/\s+/g, '').toUpperCase();
-              if (userAnswer === correctAnswer) {
-                correctCount++;
+        let isNumericQuiz = quizData.cases.some(c => c.questions.some(q => q.type === 'number'));
+
+        if (isNumericQuiz) {
+          let totalSum = 0;
+          quizData.cases.forEach(c => {
+            c.questions.forEach(q => {
+              if (q.type === 'number') {
+                totalSum += parseInt(answers[q.id]) || 0;
               }
-            }
+            });
           });
-        });
-        if (totalWithAnswers > 0) {
-          calculatedScore = Math.round((correctCount / totalWithAnswers) * 100);
+          calculatedScore = Math.round(totalSum / quizData.cases.length);
         } else {
-          // Jika tidak ada kunci jawaban (misal MPI 4 yg isinya textarea), set 100 default
-          calculatedScore = 100;
+          let correctCount = 0;
+          let totalQuestions = getTotalQuestions();
+
+          quizData.cases.forEach(c => {
+            c.questions.forEach(q => {
+              // Evaluasi jawaban (bisa handle string maupun array untuk multi-jawaban)
+              let isCorrect = false;
+              let userAnswer = (answers[q.id] || '').toString().replace(/\s+/g, '').toUpperCase();
+              
+              if (Array.isArray(q.answer)) {
+                isCorrect = q.answer.some(ans => ans.toString().replace(/\s+/g, '').toUpperCase() === userAnswer);
+              } else if (q.answer) {
+                isCorrect = (userAnswer === q.answer.toString().replace(/\s+/g, '').toUpperCase());
+              }
+
+              if (isCorrect) correctCount++;
+            });
+          });
+
+          calculatedScore = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;
         }
       }
 

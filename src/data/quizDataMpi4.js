@@ -10,8 +10,9 @@ const generateCaseQuestions = (caseIndex) => {
 };
 
 export const quizDataMpi4 = {
-  title: "Penugasan MPI 4 - Trouble Shooting E-Klaim",
-  description: "PETUNJUK PENGERJAAN:\n1. Jalankan aplikasi E-klaim pada laptop masing-masing.\n2. Inputlah kedalam aplikasi Eklaim (Identitas, Billing, Kode ICD).\n3. Tuliskan hasil grouping dari E-klaim yang sudah diinputkan pada kolom di bawah ini.\n4. Jika terjadi error grouping/ungroupable, maka identifikasilah permasalahan yang terjadi dan tuliskan alternatif solusinya.",
+  title: "Ujian Penugasan MPI 4",
+  description: "Lakukan pengamatan dan analisis trouble shooting pada sistem E-Klaim INA-CBG. Tuliskan narasi solusi dari masalah yang ditemukan.",
+  isManualScore: true,
   cases: [
     {
       id: 1,
