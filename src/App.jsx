@@ -17,38 +17,52 @@ import Leaderboard from './pages/Leaderboard';
 import QuizMpi1 from './pages/QuizMpi1';
 import FasilitatorReview from './pages/FasilitatorReview';
 import AdminDashboard from './pages/AdminDashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/jadwal" element={<Jadwal />} />
-            <Route path="/materi" element={<Materi />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="/fasilitator-review" element={<FasilitatorReview />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/quiz-mpi1" element={<QuizMpi1 />} />
-            <Route path="/quiz-mpi2" element={<QuizCaseStudy quizData={quizDataMpi2} />} />
-            <Route path="/quiz-mpi3" element={<QuizCaseStudy quizData={quizDataMpi3} />} />
-            <Route path="/quiz-mpi4" element={<QuizCaseStudy quizData={quizDataMpi4} />} />
-            <Route path="/quiz-pretest" element={<QuizCaseStudy quizData={quizDataPreTest} />} />
-            <Route path="/quiz-posttest" element={<QuizCaseStudy quizData={quizDataPostTest} />} />
-            <Route path="/penugasan-mpi5" element={<PenugasanMpi5 />} />
-            <Route path="/penugasan" element={<Penugasan />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-          </Routes>
-        </main>
-        <footer className="footer">
-          <div className="container">
-            <p>&copy; {new Date().getFullYear()} RSUP Dr. Sardjito - Pelatihan Koding. All rights reserved.</p>
-          </div>
-        </footer>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <Navbar />
+          <main className="main-content">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/jadwal" element={<Jadwal />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Protected Routes */}
+              <Route path="/materi" element={<ProtectedRoute><Materi /></ProtectedRoute>} />
+              <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+              <Route path="/penugasan" element={<ProtectedRoute><Penugasan /></ProtectedRoute>} />
+              <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+              
+              <Route path="/quiz-mpi1" element={<ProtectedRoute><QuizMpi1 /></ProtectedRoute>} />
+              <Route path="/quiz-mpi2" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi2} /></ProtectedRoute>} />
+              <Route path="/quiz-mpi3" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi3} /></ProtectedRoute>} />
+              <Route path="/quiz-mpi4" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi4} /></ProtectedRoute>} />
+              <Route path="/quiz-pretest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPreTest} /></ProtectedRoute>} />
+              <Route path="/quiz-posttest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPostTest} /></ProtectedRoute>} />
+              <Route path="/penugasan-mpi5" element={<ProtectedRoute><PenugasanMpi5 /></ProtectedRoute>} />
+
+              {/* Admin Routes */}
+              <Route path="/fasilitator-review" element={<ProtectedRoute requireAdmin={true}><FasilitatorReview /></ProtectedRoute>} />
+              <Route path="/admin-dashboard" element={<ProtectedRoute requireAdmin={true}><AdminDashboard /></ProtectedRoute>} />
+            </Routes>
+          </main>
+          <footer className="footer">
+            <div className="container">
+              <p>&copy; {new Date().getFullYear()} IHT Pelatihan Koding. All rights reserved.</p>
+            </div>
+          </footer>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

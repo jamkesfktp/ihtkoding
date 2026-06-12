@@ -12,10 +12,10 @@ const Home = () => {
       }}>
         <div className="container">
           <h1 className="title" style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>
-            Workshop Pelatihan Koding
+            IHT Pelatihan Koding
           </h1>
           <p className="subtitle" style={{ fontSize: '1.2rem', marginBottom: '2.5rem', color: 'var(--color-text)' }}>
-            RSUP Dr. Sardjito, Yogyakarta. Tingkatkan kompetensi koding medis dan pemahaman JKN-INA CBG's bersama ahlinya.
+            Tingkatkan Kemampuan dan Pemahaman anda dalam Koding Klaim JKN INACBG & iDRG
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <Link to="/materi" className="btn btn-primary">

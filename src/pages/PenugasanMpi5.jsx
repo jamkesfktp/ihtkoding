@@ -2,31 +2,32 @@ import React, { useState } from 'react';
 import { FaTasks, FaDownload, FaChartPie, FaChartBar, FaTable, FaStethoscope, FaRegLightbulb, FaGoogleDrive, FaPaperPlane } from 'react-icons/fa';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 
 const PenugasanMpi5 = () => {
   const [linkSlide, setLinkSlide] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [participantInfo, setParticipantInfo] = useState(() => {
-    const saved = localStorage.getItem('participantInfo');
-    return saved ? JSON.parse(saved) : { nama: '', instansi: '', kelompok: '' };
-  });
+  const { userData } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!participantInfo.nama.trim() || !participantInfo.kelompok.trim() || !linkSlide.trim()) {
-      alert('Silakan isi Nama Peserta, Kelompok, dan Link Presentasi!');
+    if (!userData) {
+      alert('Sesi Anda telah berakhir, silakan login kembali.');
+      return;
+    }
+    if (!linkSlide.trim()) {
+      alert('Silakan isi Link Presentasi!');
       return;
     }
     
-    localStorage.setItem('participantInfo', JSON.stringify(participantInfo));
     setIsSubmitting(true);
     
     try {
       await addDoc(collection(db, "scores"), {
         quizTitle: "Ujian Penugasan MPI 5",
-        participantName: participantInfo.nama.trim(),
-        instansi: participantInfo.instansi.trim(),
-        kelompok: participantInfo.kelompok.trim(),
+        participantName: userData.namaLengkap || userData.username || 'Unknown',
+        instansi: userData.instansi || '-',
+        kelompok: userData.kelompok || '-',
         score: "Pending",
         answers: { linkSlide },
         timestamp: serverTimestamp()
@@ -150,38 +151,6 @@ const PenugasanMpi5 = () => {
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Lengkap Peserta *</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: Budi Santoso" 
-                value={participantInfo.nama}
-                onChange={(e) => setParticipantInfo({...participantInfo, nama: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                required
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Instansi Asal</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: RSUD dr. Soetomo" 
-                value={participantInfo.instansi}
-                onChange={(e) => setParticipantInfo({...participantInfo, instansi: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Kelompok / Angkatan *</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: Kelompok 1" 
-                value={participantInfo.kelompok}
-                onChange={(e) => setParticipantInfo({...participantInfo, kelompok: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                required
-              />
-            </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Link Google Slides Kelompok *</label>
               <input 

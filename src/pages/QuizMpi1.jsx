@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaFilePdf, FaArrowLeft, FaArrowRight, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 
 const cases = [
   { id: 1, title: "Kasus RM 1", pdfUrl: "/pdfs/mpi1-soal-1.pdf" },
@@ -63,10 +64,7 @@ const QuizMpi1 = () => {
     return initial;
   });
 
-  const [participantInfo, setParticipantInfo] = useState(() => {
-    const saved = localStorage.getItem('participantInfo');
-    return saved ? JSON.parse(saved) : { nama: '', instansi: '', kelompok: '' };
-  });
+  const { userData } = useAuth();
 
   const currentCase = cases[currentCaseIndex];
   const currentAnswers = answers[currentCase.id];
@@ -138,20 +136,21 @@ const QuizMpi1 = () => {
   };
 
   const handleFinalSubmit = async () => {
-    if (!participantInfo.nama.trim() || !participantInfo.kelompok.trim()) {
-      alert('Silakan isi minimal Nama Peserta dan Kelompok!');
+    if (!userData) {
+      alert('Sesi Anda telah berakhir, silakan login kembali.');
       return;
     }
     
-    localStorage.setItem('participantInfo', JSON.stringify(participantInfo));
+    if (!window.confirm('Apakah Anda yakin ingin mensubmit seluruh analisis?')) return;
+
     setIsSubmitting(true);
     
     try {
       await addDoc(collection(db, "scores"), {
         quizTitle: "Ujian Penugasan MPI 1 (Analisis RM)",
-        participantName: participantInfo.nama.trim(),
-        instansi: participantInfo.instansi.trim(),
-        kelompok: participantInfo.kelompok.trim(),
+        participantName: userData.namaLengkap || userData.username || 'Unknown',
+        instansi: userData.instansi || '-',
+        kelompok: userData.kelompok || '-',
         score: "Pending",
         answers: answers,
         timestamp: serverTimestamp()
@@ -333,8 +332,8 @@ const QuizMpi1 = () => {
             </button>
 
             {currentCaseIndex === cases.length - 1 ? (
-              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: '#059669', borderColor: '#059669' }} onClick={() => document.getElementById('submitModal').style.display = 'flex'}>
-                <FaCheckCircle /> Simpan Seluruh Analisis MPI 1
+              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: '#059669', borderColor: '#059669' }} onClick={handleFinalSubmit} disabled={isSubmitting}>
+                <FaCheckCircle /> {isSubmitting ? 'Menyimpan...' : 'Simpan Seluruh Analisis MPI 1'}
               </button>
             ) : (
               <button className="btn btn-primary" onClick={nextCase}>
@@ -343,40 +342,6 @@ const QuizMpi1 = () => {
             )}
           </div>
 
-        </div>
-      </div>
-
-      {/* Modal Submit (HTML/CSS only based toggle) */}
-      <div id="submitModal" style={{ display: 'none', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-          <h3 style={{ marginTop: 0, color: 'var(--color-primary)' }}>Kirim Jawaban MPI 1</h3>
-          <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-            Lengkapi data di bawah ini untuk menyimpan jawaban ke Fasilitator.
-          </p>
-          
-          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-            <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Lengkap Peserta *</label>
-            <input type="text" value={participantInfo.nama} onChange={(e) => setParticipantInfo({...participantInfo, nama: e.target.value})} style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
-          </div>
-
-          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-            <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Instansi Asal</label>
-            <input type="text" value={participantInfo.instansi} onChange={(e) => setParticipantInfo({...participantInfo, instansi: e.target.value})} style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
-          </div>
-
-          <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-            <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Kelompok / Angkatan *</label>
-            <input type="text" value={participantInfo.kelompok} onChange={(e) => setParticipantInfo({...participantInfo, kelompok: e.target.value})} style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => document.getElementById('submitModal').style.display = 'none'} disabled={isSubmitting}>
-              Batal
-            </button>
-            <button className="btn btn-primary" style={{ flex: 1, backgroundColor: '#059669', borderColor: '#059669' }} onClick={handleFinalSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Menyimpan...' : 'Kirim Sekarang'}
-            </button>
-          </div>
         </div>
       </div>
 

@@ -3,17 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaArrowLeft, FaArrowRight, FaFilePdf, FaExclamationTriangle, FaTimes, FaSave } from 'react-icons/fa';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 import { quizDataMpi2 } from '../data/quizDataMpi2';
 
 const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const navigate = useNavigate();
   const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [participantInfo, setParticipantInfo] = useState(() => {
-    const saved = localStorage.getItem('participantInfo');
-    return saved ? JSON.parse(saved) : { nama: '', instansi: '', kelompok: '' };
-  });
+  const { userData } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
@@ -41,13 +38,10 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   };
 
   const handleFinalSubmit = async () => {
-    if (!participantInfo.nama.trim() || !participantInfo.kelompok.trim()) {
-      alert('Silakan isi minimal Nama Peserta dan Kelompok!');
+    if (!userData) {
+      alert('Sesi Anda telah berakhir, silakan login kembali.');
       return;
     }
-    
-    // Save to local storage for future quizzes
-    localStorage.setItem('participantInfo', JSON.stringify(participantInfo));
     
     setIsSubmitting(true);
     
@@ -96,9 +90,9 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
 
       await addDoc(collection(db, "scores"), {
         quizTitle: quizData.title,
-        participantName: participantInfo.nama.trim(),
-        instansi: participantInfo.instansi.trim(),
-        kelompok: participantInfo.kelompok.trim(),
+        participantName: userData.namaLengkap || userData.username || 'Unknown',
+        instansi: userData.instansi || '-',
+        kelompok: userData.kelompok || '-',
         score: calculatedScore,
         answers: answers,
         timestamp: serverTimestamp()
@@ -111,7 +105,6 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
       alert("Terjadi kesalahan saat menyimpan data.");
     } finally {
       setIsSubmitting(false);
-      setShowSubmitModal(false);
     }
   };
 
@@ -120,11 +113,15 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
     const answeredCount = Object.keys(answers).filter(k => answers[k] && answers[k].trim() !== '').length;
     
     if (answeredCount < totalQ) {
-      if (!window.confirm(`Anda baru menjawab ${answeredCount} dari ${totalQ} soal. Yakin ingin mengakhiri?`)) {
+      if (!window.confirm(`Anda baru menjawab ${answeredCount} dari ${totalQ} soal. Yakin ingin mengakhiri dan mensubmit jawaban?`)) {
+        return;
+      }
+    } else {
+      if (!window.confirm(`Apakah Anda yakin ingin submit semua jawaban?`)) {
         return;
       }
     }
-    setShowSubmitModal(true);
+    handleFinalSubmit();
   };
 
   if (isFinished) {
@@ -287,69 +284,6 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
 
         </div>
       </div>
-      {/* Modal Submit */}
-      {showSubmitModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ marginTop: 0, color: 'var(--color-primary)' }}>Simpan Nilai Anda</h3>
-            <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-              Mohon lengkapi biodata di bawah ini agar nilai Anda tercatat dengan benar di sistem dan Papan Peringkat. (Data akan tersimpan otomatis untuk kuis berikutnya).
-            </p>
-            
-            <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Lengkap Peserta *</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: Budi Santoso" 
-                value={participantInfo.nama}
-                onChange={(e) => setParticipantInfo({...participantInfo, nama: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Instansi Asal (Opsional)</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: RSUD dr. Soetomo" 
-                value={participantInfo.instansi}
-                onChange={(e) => setParticipantInfo({...participantInfo, instansi: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Kelompok / Angkatan *</label>
-              <input 
-                type="text" 
-                placeholder="Contoh: Kelompok 1 / Angkatan 16" 
-                value={participantInfo.kelompok}
-                onChange={(e) => setParticipantInfo({...participantInfo, kelompok: e.target.value})}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
-                className="btn btn-outline" 
-                style={{ flex: 1 }} 
-                onClick={() => setShowSubmitModal(false)}
-                disabled={isSubmitting}
-              >
-                Batal
-              </button>
-              <button 
-                className="btn btn-primary" 
-                style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }} 
-                onClick={handleFinalSubmit}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Menyimpan...' : <><FaSave /> Simpan</>}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
