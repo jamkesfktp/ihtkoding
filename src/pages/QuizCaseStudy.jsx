@@ -198,36 +198,45 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {currentCase.questions.map((q) => (
-                  <div key={q.id}>
-                    <label style={{ display: 'block', fontSize: '1rem', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>
-                      {q.label}
+                {currentCase.questions.map((q, index) => (
+                  <div key={q.id} style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155', lineHeight: '1.5' }}>
+                      {index + 1}. {q.label}
                     </label>
                     {q.type === 'textarea' ? (
                       <textarea
+                        style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '4px', minHeight: '150px' }}
                         value={answers[q.id] || ''}
                         onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        placeholder={q.placeholder || "Masukkan Teks..."}
-                        rows="8"
-                        style={{ 
-                          width: '100%', padding: '0.8rem 1rem', fontSize: '1rem', 
-                          border: '2px solid var(--color-border)', borderRadius: '0.5rem',
-                          outline: 'none', transition: 'border-color 0.2s', resize: 'vertical'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                        onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                        placeholder="Ketik jawaban Anda di sini..."
                       />
+                    ) : q.type === 'radio' ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
+                        {q.options.map((opt, optIndex) => (
+                          <label key={optIndex} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', cursor: 'pointer', color: '#475569', lineHeight: '1.4' }}>
+                            <input 
+                              type="radio" 
+                              name={q.id} 
+                              value={opt} 
+                              checked={answers[q.id] === opt} 
+                              onChange={(e) => handleInputChange(q.id, e.target.value)}
+                              style={{ marginTop: '0.2rem' }}
+                            />
+                            <span>{opt}</span>
+                          </label>
+                        ))}
+                      </div>
                     ) : (
                       <input 
                         type={q.type || "text"} 
                         value={answers[q.id] || ''} 
                         onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        placeholder={q.type === 'number' ? "Masukkan Skor..." : "Masukkan Kode/Teks..."}
+                        placeholder={q.type === 'number' ? "0" : "Ketik jawaban di sini..."}
                         style={{ 
                           width: '100%', padding: '0.8rem 1rem', fontSize: '1rem', 
                           border: '2px solid var(--color-border)', borderRadius: '0.5rem',
                           outline: 'none', transition: 'border-color 0.2s',
-                          textTransform: q.uppercase === false || q.type === 'number' ? 'none' : 'uppercase'
+                          textTransform: (q.uppercase === false || q.type === 'number') ? 'none' : 'uppercase'
                         }}
                         onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
