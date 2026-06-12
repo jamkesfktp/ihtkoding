@@ -7,11 +7,16 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, userData, logout } = useAuth();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+  const closeDropdowns = () => {
+    setIsOpen(false);
+    setIsAdminDropdownOpen(false);
+  };
 
   const handleLogout = async () => {
     try {
@@ -27,10 +32,13 @@ const Navbar = () => {
     { path: '/jadwal', label: 'Jadwal', public: true },
     { path: '/materi', label: 'Materi' },
     { path: '/penugasan', label: 'Penugasan' },
-    { path: '/leaderboard', label: 'Leaderboard' },
-    { path: '/fasilitator-review', label: 'Review Fasilitator', adminOnly: true },
-    { path: '/admin-dashboard', label: 'Admin Dashboard', adminOnly: true },
-    { path: '/manajemen-user', label: 'Manajemen User', adminOnly: true },
+    { path: '/leaderboard', label: 'Leaderboard' }
+  ];
+
+  const adminLinks = [
+    { path: '/admin-dashboard', label: 'Admin Dashboard' },
+    { path: '/fasilitator-review', label: 'Review Fasilitator' },
+    { path: '/manajemen-user', label: 'Manajemen User' },
   ];
 
   return (
@@ -58,20 +66,47 @@ const Navbar = () => {
                   <Link 
                     to={link.path} 
                     className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
-                    onClick={() => setIsOpen(false)}
-                    style={link.path === '/fasilitator-review' ? { color: '#f59e0b', fontWeight: 'bold' } : {}}
+                    onClick={closeDropdowns}
                   >
                     {link.label}
                   </Link>
                 </li>
               );
             })}
+
+            {/* Admin Dropdown */}
+            {userData && userData.isAdmin && (
+              <li 
+                className={`nav-item dropdown ${isAdminDropdownOpen ? 'open' : ''}`}
+                onMouseEnter={() => setIsAdminDropdownOpen(true)}
+                onMouseLeave={() => setIsAdminDropdownOpen(false)}
+              >
+                <div 
+                  className="dropdown-toggle" 
+                  onClick={() => setIsAdminDropdownOpen(!isAdminDropdownOpen)}
+                >
+                  Admin Panel <span style={{ fontSize: '0.8em' }}>▼</span>
+                </div>
+                <div className="dropdown-menu">
+                  {adminLinks.map((adminLink) => (
+                    <Link
+                      key={adminLink.path}
+                      to={adminLink.path}
+                      className={`dropdown-item ${location.pathname === adminLink.path ? 'active' : ''}`}
+                      onClick={closeDropdowns}
+                    >
+                      {adminLink.label}
+                    </Link>
+                  ))}
+                </div>
+              </li>
+            )}
             
             {/* User Profile / Login Button */}
             {currentUser ? (
-              <li className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem' }}>
-                <span style={{ color: 'var(--color-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <FaUserCircle /> {userData ? userData.namaLengkap : 'Loading...'}
+              <li className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto', paddingLeft: '1rem', borderLeft: '1px solid var(--color-border)' }}>
+                <span style={{ color: 'var(--color-primary-dark)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
+                  <FaUserCircle size={18} /> {userData ? userData.namaLengkap : 'Loading...'}
                 </span>
                 <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                   <FaSignOutAlt /> Keluar

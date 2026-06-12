@@ -1,30 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
 
 :root {
-  /* Colors - Tema Kemenkes */
+  /* Colors - Enterprise Theme */
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
-  --color-primary: #00A6A6;
-  --color-primary-dark: #007373;
-  --color-primary-light: #E0F7F7;
-  --color-secondary: #0f172a;
+  --color-primary: #1e40af; /* Navy/Indigo - Blue 800 */
+  --color-primary-dark: #1e3a8a; /* Blue 900 */
+  --color-primary-light: #eff6ff; /* Blue 50 */
+  --color-secondary: #0f172a; /* Slate 900 */
   --color-text: #334155;
   --color-text-light: #64748b;
-  --color-accent: #00CFCF;
+  --color-accent: #3b82f6; /* Blue 500 */
   --color-border: #e2e8f0;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
   
   /* Radii */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-full: 9999px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 0.375rem; /* Enterprise style sharp corners instead of pill shape */
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,7 +71,7 @@ ul {
 
 .main-content {
   flex: 1;
-  padding-top: 5rem; /* For fixed navbar */
+  padding-top: 4rem; /* For fixed navbar */
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -121,13 +121,13 @@ ul {
 .btn-primary {
   background-color: var(--color-primary);
   color: white;
-  box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
 }
 
 .btn-primary:hover {
   background-color: var(--color-primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(30, 64, 175, 0.3);
 }
 
 .btn-outline {

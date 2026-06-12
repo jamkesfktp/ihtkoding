@@ -58,11 +58,12 @@ const Register = () => {
         createdAt: new Date().toISOString()
       });
 
-      if (isApproved) {
-        navigate('/materi');
-      } else {
-        navigate('/menunggu-persetujuan');
-      }
+      // Sign out immediately so they must log in manually
+      await auth.signOut();
+      
+      alert("Registrasi berhasil! Silakan login menggunakan Username dan Password yang telah Anda buat.");
+      navigate('/login');
+      
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
