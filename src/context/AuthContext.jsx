@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
           if (docSnap.exists()) {
             setUserData(docSnap.data());
           } else {
-            // Jika untuk alasan tertentu data firestore hilang
-            setUserData({ username: user.email.split('@')[0], isAdmin: false });
+            // Jika dokumen di firestore sudah dihapus oleh admin
+            setUserData({ username: user.email.split('@')[0], isAdmin: false, isApproved: false });
           }
         } catch (error) {
           console.error("Error fetching user data:", error);

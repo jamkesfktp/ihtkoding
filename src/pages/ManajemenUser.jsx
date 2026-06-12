@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { FaUsers, FaSync, FaCheckCircle, FaTimesCircle, FaUserShield, FaUser } from 'react-icons/fa';
+import { FaUsers, FaSync, FaCheckCircle, FaTimesCircle, FaUserShield, FaUser, FaTrash } from 'react-icons/fa';
 
 const ManajemenUser = () => {
   const [users, setUsers] = useState([]);
@@ -58,6 +58,20 @@ const ManajemenUser = () => {
     } catch (err) {
       console.error("Error updating role:", err);
       alert("Gagal mengubah role pengguna.");
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    if (!window.confirm("PERINGATAN: Apakah Anda yakin ingin menghapus data pengguna ini secara permanen dari sistem? Mereka tidak akan bisa login atau mengakses materi lagi.")) return;
+    
+    try {
+      const userRef = doc(db, 'users', userId);
+      await deleteDoc(userRef);
+      // Remove from local state
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      alert("Gagal menghapus pengguna.");
     }
   };
 
@@ -145,13 +159,22 @@ const ManajemenUser = () => {
                     </td>
 
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
-                       <button 
-                        onClick={() => toggleRole(user.id, user.isAdmin)}
-                        className={`btn ${user.isAdmin ? 'btn-outline' : 'btn-primary'}`}
-                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                      >
-                        {user.isAdmin ? 'Jadikan Peserta' : 'Jadikan Admin'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                        <button 
+                          onClick={() => toggleRole(user.id, user.isAdmin)}
+                          className={`btn ${user.isAdmin ? 'btn-outline' : 'btn-primary'}`}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                        >
+                          {user.isAdmin ? 'Jadikan Peserta' : 'Jadikan Admin'}
+                        </button>
+                        <button 
+                          onClick={() => deleteUser(user.id)}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '4px', cursor: 'pointer' }}
+                          title="Hapus Pengguna"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
