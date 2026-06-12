@@ -10,7 +10,10 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [participantName, setParticipantName] = useState('');
+  const [participantInfo, setParticipantInfo] = useState(() => {
+    const saved = localStorage.getItem('participantInfo');
+    return saved ? JSON.parse(saved) : { nama: '', instansi: '', kelompok: '' };
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
@@ -38,10 +41,13 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   };
 
   const handleFinalSubmit = async () => {
-    if (!participantName.trim()) {
-      alert('Silakan masukkan Nama Kelompok atau Peserta!');
+    if (!participantInfo.nama.trim() || !participantInfo.kelompok.trim()) {
+      alert('Silakan isi minimal Nama Peserta dan Kelompok!');
       return;
     }
+    
+    // Save to local storage for future quizzes
+    localStorage.setItem('participantInfo', JSON.stringify(participantInfo));
     
     setIsSubmitting(true);
     
@@ -85,7 +91,9 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
 
       await addDoc(collection(db, "scores"), {
         quizTitle: quizData.title,
-        participantName: participantName.trim(),
+        participantName: participantInfo.nama.trim(),
+        instansi: participantInfo.instansi.trim(),
+        kelompok: participantInfo.kelompok.trim(),
         score: calculatedScore,
         answers: answers,
         timestamp: serverTimestamp()
@@ -279,16 +287,43 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <h3 style={{ marginTop: 0, color: 'var(--color-primary)' }}>Simpan Nilai Anda</h3>
-            <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
-              Masukkan identitas kelompok atau nama Anda agar nilai ini tercatat di Papan Peringkat (Leaderboard).
+            <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              Mohon lengkapi biodata di bawah ini agar nilai Anda tercatat dengan benar di sistem dan Papan Peringkat. (Data akan tersimpan otomatis untuk kuis berikutnya).
             </p>
-            <input 
-              type="text" 
-              placeholder="Contoh: Kelompok 1 / Budi" 
-              value={participantName}
-              onChange={(e) => setParticipantName(e.target.value)}
-              style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '2px solid #e2e8f0', borderRadius: '8px', marginBottom: '1.5rem' }}
-            />
+            
+            <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Lengkap Peserta *</label>
+              <input 
+                type="text" 
+                placeholder="Contoh: Budi Santoso" 
+                value={participantInfo.nama}
+                onChange={(e) => setParticipantInfo({...participantInfo, nama: e.target.value})}
+                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Instansi Asal (Opsional)</label>
+              <input 
+                type="text" 
+                placeholder="Contoh: RSUD dr. Soetomo" 
+                value={participantInfo.instansi}
+                onChange={(e) => setParticipantInfo({...participantInfo, instansi: e.target.value})}
+                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.9rem', color: '#334155' }}>Nama Kelompok / Angkatan *</label>
+              <input 
+                type="text" 
+                placeholder="Contoh: Kelompok 1 / Angkatan 16" 
+                value={participantInfo.kelompok}
+                onChange={(e) => setParticipantInfo({...participantInfo, kelompok: e.target.value})}
+                style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
+              />
+            </div>
+
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button 
                 className="btn btn-outline" 

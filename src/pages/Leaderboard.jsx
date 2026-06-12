@@ -23,10 +23,13 @@ const Leaderboard = () => {
 
   // Aggregation per participant
   const aggregatedScores = scores.reduce((acc, curr) => {
-    const name = curr.participantName;
+    // Gunakan 'participantName' sebagai identifier (bisa juga nama + kelompok kalau mau strict)
+    const name = curr.participantName || "Tanpa Nama";
     if (!acc[name]) {
       acc[name] = { 
         name, 
+        kelompok: curr.kelompok || "-",
+        instansi: curr.instansi || "-",
         preTest: 0, 
         mpi1: 0, 
         mpi2: 0, 
@@ -35,6 +38,10 @@ const Leaderboard = () => {
         postTest: 0, 
         total: 0 
       };
+    } else {
+      // Update kelompok/instansi jika sebelumnya kosong
+      if (curr.kelompok && acc[name].kelompok === "-") acc[name].kelompok = curr.kelompok;
+      if (curr.instansi && acc[name].instansi === "-") acc[name].instansi = curr.instansi;
     }
     
     // Map title to column
@@ -81,7 +88,9 @@ const Leaderboard = () => {
             <thead style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
               <tr>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>Rank</th>
-                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0' }}>Nama Kelompok / Peserta</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0' }}>Nama Peserta</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0' }}>Instansi</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0' }}>Kelompok</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>Pre-Test</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 1</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 2</th>
@@ -94,7 +103,7 @@ const Leaderboard = () => {
             <tbody>
               {rankedScores.length === 0 ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     Belum ada data ujian yang disubmit.
                   </td>
                 </tr>
@@ -108,6 +117,8 @@ const Leaderboard = () => {
                        index + 1}
                     </td>
                     <td style={{ padding: '1rem', fontWeight: 'bold', color: '#334155' }}>{row.name}</td>
+                    <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>{row.instansi}</td>
+                    <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>{row.kelompok}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.preTest}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi1}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi2}</td>
