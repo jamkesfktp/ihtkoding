@@ -38,13 +38,15 @@ const Navbar = () => {
   ];
 
   const fasilLinks = [
-    { path: '/fasilitator-review', label: 'Review Fasilitator' }
+    { path: '/fasilitator-review', label: 'Review Fasilitator' },
+    { path: '/panduan-fasilitator', label: 'Panduan & Jawaban' }
   ];
 
   const adminLinks = [
     { path: '/admin-dashboard', label: 'Admin Dashboard' },
     { path: '/manajemen-user', label: 'Manajemen User' },
-    { path: '/fasilitator-review', label: 'Review Fasilitator' }
+    { path: '/fasilitator-review', label: 'Review Fasilitator' },
+    { path: '/panduan-fasilitator', label: 'Panduan & Jawaban' }
   ];
 
   return (
@@ -138,17 +140,17 @@ const Navbar = () => {
             
             {/* User Profile / Login Button */}
             {currentUser ? (
-              <li className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto', paddingLeft: '1rem', borderLeft: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-primary-dark)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
+              <li className="nav-item user-profile-item">
+                <span className="user-profile-name">
                   <FaUserCircle size={18} /> {userData ? userData.namaLengkap : 'Loading...'}
                 </span>
-                <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <button onClick={handleLogout} className="btn btn-outline btn-logout">
                   <FaSignOutAlt /> Keluar
                 </button>
               </li>
             ) : (
-              <li className="nav-item" style={{ marginLeft: '1rem' }}>
-                <Link to="/login" className="btn btn-primary" onClick={() => setIsOpen(false)} style={{ padding: '0.5rem 1.2rem' }}>
+              <li className="nav-item login-item">
+                <Link to="/login" className="btn btn-primary" onClick={() => setIsOpen(false)}>
                   Login / Daftar
                 </Link>
               </li>

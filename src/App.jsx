@@ -16,6 +16,7 @@ import PenugasanMpi5 from './pages/PenugasanMpi5';
 import Leaderboard from './pages/Leaderboard';
 import QuizMpi1 from './pages/QuizMpi1';
 import FasilitatorReview from './pages/FasilitatorReview';
+import PanduanFasilitator from './pages/PanduanFasilitator';
 import AdminDashboard from './pages/AdminDashboard';
 import ManajemenUser from './pages/ManajemenUser';
 import Login from './pages/Login';
@@ -70,6 +71,12 @@ function App() {
               <Route path="/fasilitator-review" element={
                 <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
                   <FasilitatorReview />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/panduan-fasilitator" element={
+                <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
+                  <PanduanFasilitator />
                 </ProtectedRoute>
               } />
             </Routes>
