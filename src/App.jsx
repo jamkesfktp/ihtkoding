@@ -54,9 +54,24 @@ function App() {
               <Route path="/penugasan-mpi5" element={<ProtectedRoute><PenugasanMpi5 /></ProtectedRoute>} />
 
               {/* Admin Routes */}
-              <Route path="/fasilitator-review" element={<ProtectedRoute requireAdmin={true}><FasilitatorReview /></ProtectedRoute>} />
-              <Route path="/admin-dashboard" element={<ProtectedRoute requireAdmin={true}><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/manajemen-user" element={<ProtectedRoute requireAdmin={true}><ManajemenUser /></ProtectedRoute>} />
+              <Route path="/admin-dashboard" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/manajemen-user" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ManajemenUser />
+                </ProtectedRoute>
+              } />
+
+              {/* Fasilitator & Admin Route */}
+              <Route path="/fasilitator-review" element={
+                <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
+                  <FasilitatorReview />
+                </ProtectedRoute>
+              } />
             </Routes>
           </main>
           <footer className="footer">

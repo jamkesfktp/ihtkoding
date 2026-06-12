@@ -40,11 +40,13 @@ const Register = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, formData.password);
       const user = userCredential.user;
 
-      // Cek apakah admin
-      const isAdmin = formData.username.toLowerCase() === 'admin' || formData.username.toLowerCase() === 'fasilitator';
+      // Cek apakah admin/fasilitator
+      let role = 'peserta';
+      if (formData.username.toLowerCase() === 'admin') role = 'admin';
+      if (formData.username.toLowerCase() === 'fasilitator') role = 'fasilitator';
       
-      // Auto approve for admins, false for others
-      const isApproved = isAdmin ? true : false;
+      const isAdmin = role === 'admin' || role === 'fasilitator';
+      const isApproved = isAdmin;
 
       // Save user details to Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -53,6 +55,7 @@ const Register = () => {
         angkatan: formData.angkatan,
         kelompok: formData.kelompok,
         username: formData.username.trim().toLowerCase(),
+        role: role,
         isAdmin: isAdmin,
         isApproved: isApproved,
         createdAt: new Date().toISOString()

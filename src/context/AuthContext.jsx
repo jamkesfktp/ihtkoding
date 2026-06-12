@@ -21,10 +21,15 @@ export const AuthProvider = ({ children }) => {
           const docRef = doc(db, 'users', user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setUserData(docSnap.data());
+            const data = docSnap.data();
+            // Handle legacy data that doesn't have role
+            if (!data.role) {
+              data.role = data.isAdmin ? 'admin' : 'peserta';
+            }
+            setUserData(data);
           } else {
             // Jika dokumen di firestore sudah dihapus oleh admin
-            setUserData({ username: user.email.split('@')[0], isAdmin: false, isApproved: false });
+            setUserData({ username: user.email.split('@')[0], role: 'peserta', isAdmin: false, isApproved: false });
           }
         } catch (error) {
           console.error("Error fetching user data:", error);

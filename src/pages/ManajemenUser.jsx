@@ -45,19 +45,21 @@ const ManajemenUser = () => {
     }
   };
 
-  const toggleRole = async (userId, currentAdminStatus) => {
-    if (!window.confirm(`Apakah Anda yakin ingin ${currentAdminStatus ? 'mencabut' : 'memberikan'} akses Admin pada pengguna ini?`)) return;
-    
+  const changeRole = async (userId, newRole) => {
     try {
       const userRef = doc(db, 'users', userId);
+      const isAdmin = newRole === 'admin' || newRole === 'fasilitator';
+      
       await updateDoc(userRef, {
-        isAdmin: !currentAdminStatus
+        role: newRole,
+        isAdmin: isAdmin,
+        isApproved: isAdmin ? true : undefined // If making admin/fasil, auto approve
       });
-      // Update local state
-      setUsers(users.map(u => u.id === userId ? { ...u, isAdmin: !currentAdminStatus } : u));
-    } catch (err) {
-      console.error("Error updating role:", err);
-      alert("Gagal mengubah role pengguna.");
+      
+      setUsers(users.map(u => u.id === userId ? { ...u, role: newRole, isAdmin: isAdmin } : u));
+    } catch (error) {
+      console.error("Error updating role:", error);
+      alert('Gagal mengubah hak akses. Silakan coba lagi.');
     }
   };
 
@@ -127,7 +129,7 @@ const ManajemenUser = () => {
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
                       {user.isAdmin ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', backgroundColor: '#e0e7ff', color: '#4f46e5', padding: '0.3rem 0.6rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 600 }}>
-                          <FaUserShield /> Admin
+                          <FaUserShield /> {user.role || 'Admin'}
                         </span>
                       ) : (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', backgroundColor: '#f1f5f9', color: '#64748b', padding: '0.3rem 0.6rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 600 }}>
@@ -160,16 +162,19 @@ const ManajemenUser = () => {
 
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                        <button 
-                          onClick={() => toggleRole(user.id, user.isAdmin)}
-                          className={`btn ${user.isAdmin ? 'btn-outline' : 'btn-primary'}`}
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                        <select 
+                          value={user.role || (user.isAdmin ? 'admin' : 'peserta')}
+                          onChange={(e) => changeRole(user.id, e.target.value)}
+                          style={{ padding: '0.4rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
                         >
-                          {user.isAdmin ? 'Jadikan Peserta' : 'Jadikan Admin'}
-                        </button>
+                          <option value="peserta">Peserta</option>
+                          <option value="fasilitator">Fasilitator</option>
+                          <option value="admin">Admin Utama</option>
+                        </select>
                         <button 
                           onClick={() => deleteUser(user.id)}
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '4px', cursor: 'pointer' }}
+                          className="btn"
+                          style={{ padding: '0.4rem 0.8rem', backgroundColor: '#fee2e2', color: '#ef4444', borderColor: 'transparent' }}
                           title="Hapus Pengguna"
                         >
                           <FaTrash />
