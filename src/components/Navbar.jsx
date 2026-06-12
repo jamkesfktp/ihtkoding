@@ -14,8 +14,8 @@ const Navbar = () => {
     { path: '/', label: 'Home' },
     { path: '/jadwal', label: 'Jadwal' },
     { path: '/materi', label: 'Materi' },
-    { path: '/soal', label: 'Soal' },
     { path: '/penugasan', label: 'Penugasan' },
+    { path: '/leaderboard', label: 'Leaderboard' },
   ];
 
   return (

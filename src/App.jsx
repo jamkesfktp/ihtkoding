@@ -4,9 +4,17 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Jadwal from './pages/Jadwal';
 import Materi from './pages/Materi';
-import Soal from './pages/Soal';
 import Penugasan from './pages/Penugasan';
 import Quiz from './pages/Quiz';
+import QuizCaseStudy from './pages/QuizCaseStudy';
+import { quizDataMpi1 } from './data/quizDataMpi1';
+import { quizDataMpi2 } from './data/quizDataMpi2';
+import { quizDataMpi3 } from './data/quizDataMpi3';
+import { quizDataMpi4 } from './data/quizDataMpi4';
+import { quizDataPreTest } from './data/quizDataPreTest';
+import { quizDataPostTest } from './data/quizDataPostTest';
+import PenugasanMpi5 from './pages/PenugasanMpi5';
+import Leaderboard from './pages/Leaderboard';
 
 function App() {
   return (
@@ -18,9 +26,16 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/jadwal" element={<Jadwal />} />
             <Route path="/materi" element={<Materi />} />
-            <Route path="/soal" element={<Soal />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/quiz-mpi1" element={<QuizCaseStudy quizData={quizDataMpi1} />} />
+            <Route path="/quiz-mpi2" element={<QuizCaseStudy quizData={quizDataMpi2} />} />
+            <Route path="/quiz-mpi3" element={<QuizCaseStudy quizData={quizDataMpi3} />} />
+            <Route path="/quiz-mpi4" element={<QuizCaseStudy quizData={quizDataMpi4} />} />
+            <Route path="/quiz-pretest" element={<QuizCaseStudy quizData={quizDataPreTest} />} />
+            <Route path="/quiz-posttest" element={<QuizCaseStudy quizData={quizDataPostTest} />} />
+            <Route path="/penugasan-mpi5" element={<PenugasanMpi5 />} />
             <Route path="/penugasan" element={<Penugasan />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </main>
         <footer className="footer">
