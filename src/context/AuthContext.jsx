@@ -26,10 +26,10 @@ export const AuthProvider = ({ children }) => {
             if (!data.role) {
               data.role = data.isAdmin ? 'admin' : 'peserta';
             }
-            setUserData(data);
+            setUserData({ ...data, uid: user.uid });
           } else {
             // Jika dokumen di firestore sudah dihapus oleh admin
-            setUserData({ username: user.email.split('@')[0], role: 'peserta', isAdmin: false, isApproved: false });
+            setUserData({ username: user.email.split('@')[0], role: 'peserta', isAdmin: false, isApproved: false, uid: user.uid });
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
