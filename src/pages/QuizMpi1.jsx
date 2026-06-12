@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaFilePdf, FaArrowLeft, FaArrowRight, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 const cases = [
   { id: 1, title: "Kasus RM 1", pdfUrl: "/pdfs/mpi1-soal-1.pdf" },
@@ -65,6 +66,46 @@ const QuizMpi1 = () => {
   });
 
   const { userData } = useAuth();
+  
+  const [submissionId, setSubmissionId] = useState(null);
+  const [editCount, setEditCount] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const fetchSubmission = async () => {
+      if (!userData || !userData.uid) {
+        setIsLoadingData(false);
+        return;
+      }
+      
+      try {
+        const q = query(
+          collection(db, "scores"), 
+          where("userId", "==", userData.uid),
+          where("quizTitle", "==", "Ujian Penugasan MPI 1 (Analisis RM)")
+        );
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0];
+          setSubmissionId(docData.id);
+          const data = docData.data();
+          if (data.answers) setAnswers(data.answers);
+          setEditCount(data.editCount || 0);
+          
+          if ((data.editCount || 0) >= 1) {
+            setIsFinished(true); // Langsung tunjukkan layar sukses jika sudah mentok
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching previous submission:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchSubmission();
+  }, [userData]);
 
   const currentCase = cases[currentCaseIndex];
   const currentAnswers = answers[currentCase.id];
@@ -141,23 +182,42 @@ const QuizMpi1 = () => {
       return;
     }
     
-    if (!window.confirm('Apakah Anda yakin ingin mensubmit seluruh analisis?')) return;
+    if (editCount >= 1 && submissionId) {
+      alert('Anda telah menggunakan kesempatan edit 1x. Jawaban Anda sudah dikunci.');
+      return;
+    }
+
+    if (!window.confirm(submissionId ? 'Anda yakin ingin mengubah jawaban? Kesempatan edit hanya 1x.' : 'Apakah Anda yakin ingin mensubmit seluruh analisis?')) {
+      return;
+    }
 
     setIsSubmitting(true);
     
     try {
-      await addDoc(collection(db, "scores"), {
-        quizTitle: "Ujian Penugasan MPI 1 (Analisis RM)",
-        participantName: userData.namaLengkap || userData.username || 'Unknown',
-        instansi: userData.instansi || '-',
-        kelompok: userData.kelompok || '-',
-        score: "Pending",
-        answers: answers,
-        timestamp: serverTimestamp()
-      });
+      if (submissionId) {
+        await updateDoc(doc(db, "scores", submissionId), {
+          answers: answers,
+          editCount: editCount + 1,
+          lastEdited: serverTimestamp()
+        });
+        setEditCount(editCount + 1);
+      } else {
+        const docRef = await addDoc(collection(db, "scores"), {
+          userId: userData.uid,
+          quizTitle: "Ujian Penugasan MPI 1 (Analisis RM)",
+          participantName: userData.namaLengkap || userData.username || 'Unknown',
+          instansi: userData.instansi || '-',
+          kelompok: userData.kelompok || '-',
+          score: "Pending",
+          answers: answers,
+          editCount: 0,
+          timestamp: serverTimestamp()
+        });
+        setSubmissionId(docRef.id);
+      }
       setIsFinished(true);
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error adding/updating document: ", error);
       alert('Terjadi kesalahan saat menyimpan. Coba lagi.');
     } finally {
       setIsSubmitting(false);
@@ -169,9 +229,11 @@ const QuizMpi1 = () => {
       <div className="page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 5rem)' }}>
         <div className="card" style={{ maxWidth: '600px', textAlign: 'center', padding: '3rem 2rem' }}>
           <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ color: '#0f172a', marginBottom: '1rem' }}>Tugas Selesai!</h2>
+          <h2 style={{ color: '#0f172a', marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : 'Tugas Selesai!'}</h2>
           <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-            Jawaban Analisis Rekam Medis MPI 1 Anda telah dikirim dan menunggu review Fasilitator.
+            {editCount >= 1 
+              ? 'Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.' 
+              : 'Jawaban Analisis Rekam Medis MPI 1 Anda telah dikirim dan menunggu review Fasilitator.'}
           </p>
           <button className="btn btn-primary" onClick={() => navigate('/penugasan')}>
             Kembali ke Workspace Penugasan
@@ -332,8 +394,8 @@ const QuizMpi1 = () => {
             </button>
 
             {currentCaseIndex === cases.length - 1 ? (
-              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: '#059669', borderColor: '#059669' }} onClick={handleFinalSubmit} disabled={isSubmitting}>
-                <FaCheckCircle /> {isSubmitting ? 'Menyimpan...' : 'Simpan Seluruh Analisis MPI 1'}
+              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: '#059669', borderColor: '#059669' }} onClick={handleFinalSubmit} disabled={isSubmitting || isLoadingData}>
+                <FaCheckCircle /> {isLoadingData ? 'Memuat...' : isSubmitting ? 'Menyimpan...' : submissionId ? 'Update Analisis (Sisa Edit: 1x)' : 'Simpan Seluruh Analisis MPI 1'}
               </button>
             ) : (
               <button className="btn btn-primary" onClick={nextCase}>

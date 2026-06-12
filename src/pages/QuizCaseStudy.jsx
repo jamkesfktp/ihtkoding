@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaArrowLeft, FaArrowRight, FaFilePdf, FaExclamationTriangle, FaTimes, FaSave } from 'react-icons/fa';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 import { quizDataMpi2 } from '../data/quizDataMpi2';
 
 const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
@@ -13,6 +14,45 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const { userData } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [submissionId, setSubmissionId] = useState(null);
+  const [editCount, setEditCount] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const fetchSubmission = async () => {
+      if (!userData || !userData.uid) {
+        setIsLoadingData(false);
+        return;
+      }
+      
+      try {
+        const q = query(
+          collection(db, "scores"), 
+          where("userId", "==", userData.uid),
+          where("quizTitle", "==", quizData.title)
+        );
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0];
+          setSubmissionId(docData.id);
+          const data = docData.data();
+          if (data.answers) setAnswers(data.answers);
+          setEditCount(data.editCount || 0);
+          
+          if ((data.editCount || 0) >= 1) {
+            setIsFinished(true); // Langsung tunjukkan layar sukses jika sudah mentok
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching previous submission:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchSubmission();
+  }, [userData, quizData.title]);
 
   const handleInputChange = (questionId, value) => {
     setAnswers(prev => ({
@@ -40,6 +80,11 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const handleFinalSubmit = async () => {
     if (!userData) {
       alert('Sesi Anda telah berakhir, silakan login kembali.');
+      return;
+    }
+    
+    if (editCount >= 1 && submissionId) {
+      alert('Anda telah menggunakan kesempatan edit 1x. Jawaban Anda sudah dikunci.');
       return;
     }
     
@@ -88,18 +133,30 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
         }
       }
 
-      await addDoc(collection(db, "scores"), {
-        quizTitle: quizData.title,
-        participantName: userData.namaLengkap || userData.username || 'Unknown',
-        instansi: userData.instansi || '-',
-        kelompok: userData.kelompok || '-',
-        score: calculatedScore,
-        answers: answers,
-        timestamp: serverTimestamp()
-      });
+      if (submissionId) {
+        await updateDoc(doc(db, "scores", submissionId), {
+          score: calculatedScore,
+          answers: answers,
+          editCount: editCount + 1,
+          lastEdited: serverTimestamp()
+        });
+        setEditCount(editCount + 1);
+      } else {
+        const docRef = await addDoc(collection(db, "scores"), {
+          userId: userData.uid,
+          quizTitle: quizData.title,
+          participantName: userData.namaLengkap || userData.username || 'Unknown',
+          instansi: userData.instansi || '-',
+          kelompok: userData.kelompok || '-',
+          score: calculatedScore,
+          answers: answers,
+          editCount: 0,
+          timestamp: serverTimestamp()
+        });
+        setSubmissionId(docRef.id);
+      }
 
-      alert(`Sukses! Nilai Anda (${calculatedScore}) telah disimpan.`);
-      navigate('/leaderboard');
+      setIsFinished(true);
     } catch (error) {
       console.error("Error saving document: ", error);
       alert("Terjadi kesalahan saat menyimpan data.");
@@ -129,7 +186,12 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
       <div className="page-container" style={{ padding: '4rem 1.5rem', backgroundColor: '#f8fafc' }}>
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
           <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ marginBottom: '1rem' }}>Hasil Ujian {quizData.title}</h2>
+          <h2 style={{ marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : `Hasil Ujian ${quizData.title}`}</h2>
+          <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+            {editCount >= 1 
+              ? 'Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.' 
+              : 'Sukses! Jawaban Anda telah dikirim.'}
+          </p>
           <button className="btn btn-primary" onClick={() => navigate('/penugasan')}>
             Kembali ke Halaman Penugasan
           </button>
@@ -219,6 +281,7 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
                         value={answers[q.id] || ''}
                         onChange={(e) => handleInputChange(q.id, e.target.value)}
                         placeholder="Ketik jawaban Anda di sini..."
+                        disabled={editCount >= 1 || isLoadingData}
                       />
                     ) : q.type === 'radio' ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
@@ -231,6 +294,7 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
                               checked={answers[q.id] === opt} 
                               onChange={(e) => handleInputChange(q.id, e.target.value)}
                               style={{ marginTop: '0.2rem' }}
+                              disabled={editCount >= 1 || isLoadingData}
                             />
                             <span>{opt}</span>
                           </label>
@@ -250,6 +314,7 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
                         }}
                         onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                        disabled={editCount >= 1 || isLoadingData}
                       />
                     )}
                   </div>
@@ -272,8 +337,9 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
                 className="btn btn-primary" 
                 style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', backgroundColor: '#059669', borderColor: '#059669' }}
                 onClick={finishQuiz}
+                disabled={isSubmitting || isLoadingData}
               >
-                <FaCheckCircle /> Finalisasi & Submit Jawaban 
+                <FaCheckCircle /> {isLoadingData ? 'Memuat...' : isSubmitting ? 'Menyimpan...' : submissionId ? 'Update Jawaban (Sisa Edit: 1x)' : 'Finalisasi & Submit Jawaban'}
               </button>
             ) : (
               <button className="btn btn-primary" onClick={nextCase}>

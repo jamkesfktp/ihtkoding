@@ -1,13 +1,57 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaTimesCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { quizQuestions } from '../data/quizData';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 const Quiz = () => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isFinished, setIsFinished] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionId, setSubmissionId] = useState(null);
+  const [editCount, setEditCount] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const { userData } = useAuth();
+  
+  useEffect(() => {
+    const fetchSubmission = async () => {
+      if (!userData || !userData.uid) {
+        setIsLoadingData(false);
+        return;
+      }
+      
+      try {
+        const q = query(
+          collection(db, "scores"), 
+          where("userId", "==", userData.uid),
+          where("quizTitle", "==", "Ujian Koding Dasar")
+        );
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0];
+          setSubmissionId(docData.id);
+          const data = docData.data();
+          if (data.answers) setAnswers(data.answers);
+          setEditCount(data.editCount || 0);
+          
+          if ((data.editCount || 0) >= 1) {
+            setIsFinished(true); // Langsung tunjukkan layar sukses jika sudah mentok
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching previous submission:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchSubmission();
+  }, [userData]);
 
   const handleOptionSelect = (option) => {
     setAnswers({
@@ -28,13 +72,60 @@ const Quiz = () => {
     }
   };
 
-  const finishQuiz = () => {
+  const finishQuiz = async () => {
+    if (!userData) {
+      alert('Sesi Anda telah berakhir, silakan login kembali.');
+      return;
+    }
+    
     if (Object.keys(answers).length < quizQuestions.length) {
       if (!window.confirm('Anda belum menjawab semua soal. Yakin ingin mengakhiri?')) {
         return;
       }
+    } else {
+      if (!window.confirm(submissionId ? 'Anda yakin ingin mengubah jawaban? Kesempatan edit hanya 1x.' : 'Apakah Anda yakin ingin mensubmit semua jawaban?')) {
+        return;
+      }
     }
-    setIsFinished(true);
+    
+    if (editCount >= 1 && submissionId) {
+      alert('Anda telah menggunakan kesempatan edit 1x. Jawaban Anda sudah dikunci.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const result = calculateScore();
+
+    try {
+      if (submissionId) {
+        await updateDoc(doc(db, "scores", submissionId), {
+          score: result.score,
+          answers: answers,
+          editCount: editCount + 1,
+          lastEdited: serverTimestamp()
+        });
+        setEditCount(editCount + 1);
+      } else {
+        const docRef = await addDoc(collection(db, "scores"), {
+          userId: userData.uid,
+          quizTitle: "Ujian Koding Dasar",
+          participantName: userData.namaLengkap || userData.username || 'Unknown',
+          instansi: userData.instansi || '-',
+          kelompok: userData.kelompok || '-',
+          score: result.score,
+          answers: answers,
+          editCount: 0,
+          timestamp: serverTimestamp()
+        });
+        setSubmissionId(docRef.id);
+      }
+      setIsFinished(true);
+    } catch (error) {
+      console.error("Error saving document: ", error);
+      alert("Terjadi kesalahan saat menyimpan data.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const calculateScore = () => {
@@ -55,7 +146,14 @@ const Quiz = () => {
       <div className="page-container" style={{ padding: '4rem 1.5rem', backgroundColor: '#f8fafc' }}>
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
           <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ marginBottom: '1rem' }}>Hasil Ujian Koding</h2>
+          <h2 style={{ marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : 'Hasil Ujian Koding'}</h2>
+          
+          {!submissionId || editCount >= 1 ? (
+            <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+              Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.
+            </p>
+          ) : null}
+
           <div style={{ fontSize: '4rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '1rem' }}>
             {result.score}
           </div>
@@ -142,6 +240,7 @@ const Quiz = () => {
                   value={option} 
                   checked={answers[currentQuestion] === option}
                   onChange={() => handleOptionSelect(option)}
+                  disabled={editCount >= 1 || isLoadingData}
                   style={{ transform: 'scale(1.2)' }}
                 />
                 {option}
@@ -160,8 +259,8 @@ const Quiz = () => {
             </button>
 
             {currentQuestion === quizQuestions.length - 1 ? (
-              <button className="btn btn-primary" onClick={finishQuiz} style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}>
-                <FaCheckCircle /> Selesai & Lihat Hasil
+              <button className="btn btn-primary" onClick={finishQuiz} disabled={isSubmitting || isLoadingData} style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}>
+                <FaCheckCircle /> {isLoadingData ? 'Memuat...' : isSubmitting ? 'Menyimpan...' : submissionId ? 'Update Jawaban (Sisa Edit: 1x)' : 'Selesai & Lihat Hasil'}
               </button>
             ) : (
               <button className="btn btn-primary" onClick={nextQuestion}>

@@ -1,13 +1,49 @@
 import React, { useState } from 'react';
 import { FaTasks, FaDownload, FaChartPie, FaChartBar, FaTable, FaStethoscope, FaRegLightbulb, FaGoogleDrive, FaPaperPlane } from 'react-icons/fa';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 const PenugasanMpi5 = () => {
   const [linkSlide, setLinkSlide] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { userData } = useAuth();
+  const [submissionId, setSubmissionId] = useState(null);
+  const [editCount, setEditCount] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const fetchSubmission = async () => {
+      if (!userData || !userData.uid) {
+        setIsLoadingData(false);
+        return;
+      }
+      
+      try {
+        const q = query(
+          collection(db, "scores"), 
+          where("userId", "==", userData.uid),
+          where("quizTitle", "==", "Ujian Penugasan MPI 5")
+        );
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0];
+          setSubmissionId(docData.id);
+          const data = docData.data();
+          setLinkSlide(data.answers?.linkSlide || '');
+          setEditCount(data.editCount || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching previous submission:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchSubmission();
+  }, [userData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,20 +56,43 @@ const PenugasanMpi5 = () => {
       return;
     }
     
+    if (editCount >= 1 && submissionId) {
+      alert('Anda telah menggunakan kesempatan edit 1x. Jawaban Anda sudah dikunci.');
+      return;
+    }
+
+    if (!window.confirm(submissionId ? 'Anda yakin ingin mengubah jawaban? Kesempatan edit hanya 1x.' : 'Anda yakin ingin mengirim jawaban ini?')) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      await addDoc(collection(db, "scores"), {
-        quizTitle: "Ujian Penugasan MPI 5",
-        participantName: userData.namaLengkap || userData.username || 'Unknown',
-        instansi: userData.instansi || '-',
-        kelompok: userData.kelompok || '-',
-        score: "Pending",
-        answers: { linkSlide },
-        timestamp: serverTimestamp()
-      });
-      alert('Berhasil! Link presentasi Anda telah dikirim dan menunggu review Fasilitator.');
-      setLinkSlide('');
+      if (submissionId) {
+        // Update existing
+        await updateDoc(doc(db, "scores", submissionId), {
+          answers: { linkSlide },
+          editCount: editCount + 1,
+          lastEdited: serverTimestamp()
+        });
+        setEditCount(editCount + 1);
+        alert('Berhasil! Link presentasi Anda telah diperbarui.');
+      } else {
+        // Create new
+        const docRef = await addDoc(collection(db, "scores"), {
+          userId: userData.uid,
+          quizTitle: "Ujian Penugasan MPI 5",
+          participantName: userData.namaLengkap || userData.username || 'Unknown',
+          instansi: userData.instansi || '-',
+          kelompok: userData.kelompok || '-',
+          score: "Pending",
+          answers: { linkSlide },
+          editCount: 0,
+          timestamp: serverTimestamp()
+        });
+        setSubmissionId(docRef.id);
+        alert('Berhasil! Link presentasi Anda telah dikirim dan menunggu review Fasilitator.');
+      }
     } catch (error) {
       console.error("Error submitting link: ", error);
       alert('Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
@@ -159,16 +218,24 @@ const PenugasanMpi5 = () => {
                 value={linkSlide}
                 onChange={(e) => setLinkSlide(e.target.value)}
                 style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                required
+                disabled={editCount >= 1 || isLoadingData}
               />
             </div>
+            
+            {editCount >= 1 && (
+              <div style={{ padding: '1rem', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                <FaCheckCircle style={{ display: 'inline', marginRight: '0.4rem' }} /> 
+                Jawaban telah dikunci karena Anda sudah menggunakan batas pengubahan 1x.
+              </div>
+            )}
+
             <button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || editCount >= 1 || isLoadingData}
               className="btn btn-primary" 
-              style={{ padding: '0.8rem', fontSize: '1rem', marginTop: '1rem', backgroundColor: '#10b981', borderColor: '#10b981' }}
+              style={{ padding: '0.8rem', fontSize: '1rem', marginTop: '1rem', backgroundColor: editCount >= 1 ? '#94a3b8' : '#10b981', borderColor: editCount >= 1 ? '#94a3b8' : '#10b981', cursor: editCount >= 1 ? 'not-allowed' : 'pointer' }}
             >
-              {isSubmitting ? 'Mengirim...' : 'Tandai Selesai & Kirim ke Fasilitator'}
+              {isLoadingData ? 'Memuat...' : isSubmitting ? 'Mengirim...' : editCount >= 1 ? 'Terkunci' : submissionId ? 'Update Jawaban (Sisa Edit: 1x)' : 'Tandai Selesai & Kirim ke Fasilitator'}
             </button>
           </form>
         </div>
