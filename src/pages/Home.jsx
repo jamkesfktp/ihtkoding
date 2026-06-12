@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaBook, FaTasks, FaCalendarAlt, FaFileCode } from 'react-icons/fa';
+import { FaBook, FaTasks, FaCalendarAlt, FaTrophy } from 'react-icons/fa';
 
 const Home = () => {
   return (
@@ -41,11 +41,11 @@ const Home = () => {
             </div>
             
             <div className="card">
-              <div className="card-icon"><FaFileCode /></div>
-              <h3 className="card-title">Evaluasi & Soal</h3>
-              <p className="card-desc">Uji pemahaman Anda melalui pre-test, post-test, dan berbagai latihan soal koding rekam medis.</p>
+              <div className="card-icon"><FaTrophy /></div>
+              <h3 className="card-title">Papan Peringkat</h3>
+              <p className="card-desc">Pantau skor akhir dan peringkat Anda bersama kelompok lain secara *real-time*.</p>
               <div className="card-footer">
-                <Link to="/soal" className="text-primary" style={{ fontWeight: 600 }}>Kerjakan Soal &rarr;</Link>
+                <Link to="/leaderboard" className="text-primary" style={{ fontWeight: 600 }}>Lihat Leaderboard &rarr;</Link>
               </div>
             </div>
 
