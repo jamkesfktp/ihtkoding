@@ -17,6 +17,7 @@ const Navbar = () => {
     { path: '/penugasan', label: 'Penugasan' },
     { path: '/leaderboard', label: 'Leaderboard' },
     { path: '/fasilitator-review', label: 'Review Fasilitator' },
+    { path: '/admin-dashboard', label: 'Admin Dashboard' },
   ];
 
   return (

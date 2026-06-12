@@ -16,6 +16,7 @@ import PenugasanMpi5 from './pages/PenugasanMpi5';
 import Leaderboard from './pages/Leaderboard';
 import QuizMpi1 from './pages/QuizMpi1';
 import FasilitatorReview from './pages/FasilitatorReview';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/materi" element={<Materi />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/fasilitator-review" element={<FasilitatorReview />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/quiz-mpi1" element={<QuizMpi1 />} />
             <Route path="/quiz-mpi2" element={<QuizCaseStudy quizData={quizDataMpi2} />} />
             <Route path="/quiz-mpi3" element={<QuizCaseStudy quizData={quizDataMpi3} />} />
