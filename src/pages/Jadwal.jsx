@@ -12,8 +12,8 @@ const scheduleData = [
       { time: "09:00 - 10:30", title: "MP 1 : Building Learning Commitment (BLC)", speaker: "Diklat Sardjito" },
       { time: "10:30 - 12:00", title: "MD 1 : Kebijakan Program JKN", speaker: "Kapus" },
       { time: "12:00 - 13:00", title: "ISHOMA", speaker: "-" },
-      { time: "13:00 - 14:30", title: "MD 2 : Kebijakan Rekam Medis Elektronik dan Kode Etik Perekam Medis", speaker: "Fasilitator RS" },
-      { time: "14:30 - 16:00", title: "MD 3 : Pola Pembayaran FPKTL dengan Menggunakan iDRG", speaker: "Rida" },
+      { time: "13:00 - 14:30", title: "MD 2 : Kebijakan Rekam Medis Elektronik dan Kode Etik Perekam Medis dan Informasi Kesehatan", speaker: "Fasilitator RS" },
+      { time: "14:30 - 16:00", title: "MD 3 : Pola Pembayaran FPKTL dengan Menggunakan Indonesia Diagnosis Related Group (iDRG)", speaker: "Rida" },
       { time: "16:00 - 17:30", title: "MD 4 : Verifikasi Klaim JKN", speaker: "Maria" }
     ]
   },
@@ -28,8 +28,8 @@ const scheduleData = [
       { time: "10:30 - 12:00", title: "MI 2 : Kodifikasi Penyakit dan Masalah Kesehatan", speaker: "Riki" },
       { time: "12:00 - 13:00", title: "ISHOMA", speaker: "-" },
       { time: "13:00 - 14:30", title: "MI 3 : Kodifikasi Tindakan/Prosedur dan Masalah Kesehatan", speaker: "Yosi" },
-      { time: "14:30 - 15:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable", speaker: "Adit" },
-      { time: "15:15 - 16:00", title: "MI 5 : Analisis Data Klaim dalam iDRG", speaker: "Shabrina" },
+      { time: "14:30 - 15:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable pada Aplikasi E-Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Adit" },
+      { time: "15:15 - 16:00", title: "MI 5 : Analisis Data Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Shabrina" },
       { time: "16:00 - 17:30", title: "MP 2 : Anti Korupsi (Fraud dalam JKN)", speaker: "SPI SARDJITO" }
     ]
   },
@@ -53,9 +53,9 @@ const scheduleData = [
       { time: "07:30 - 08:00", title: "Refleksi", speaker: "-" },
       { time: "08:00 - 09:30", title: "MI 3 : Kodifikasi Tindakan/Prosedur dan Masalah Kesehatan", speaker: "Riki" },
       { time: "09:30 - 09:45", title: "Break", speaker: "-" },
-      { time: "09:45 - 11:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable", speaker: "Adit" },
+      { time: "09:45 - 11:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable pada Aplikasi E-Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Adit" },
       { time: "11:15 - 12:30", title: "ISHOMA", speaker: "-" },
-      { time: "12:30 - 14:45", title: "MI 5 : Analisis Data Klaim dalam iDRG", speaker: "Riki" },
+      { time: "12:30 - 14:45", title: "MI 5 : Analisis Data Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Riki" },
       { time: "14:45 - 16:15", title: "MP 3 : Rencana Tindak Lanjut (RTL)", speaker: "Riki + Adit + Maria" },
       { time: "16:15 - 17:00", title: "Penutupan", speaker: "-" }
     ]
