@@ -104,9 +104,13 @@ const Register = () => {
             <div>
               <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, color: '#334155' }}>Instansi</label>
               <input 
-                type="text" name="instansi" value={formData.instansi} onChange={handleChange} required
+                type="text" list="instansi-list" name="instansi" value={formData.instansi} onChange={handleChange} required
                 style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                placeholder="Pilih atau ketik instansi"
               />
+              <datalist id="instansi-list">
+                <option value="RSUP Sardjito" />
+              </datalist>
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, color: '#334155' }}>Angkatan</label>
