@@ -152,14 +152,35 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
               if (caseCorrect) correctCount += c.questions.length; // anggap semua pertanyaan di kasus ini benar
             } else {
               c.questions.forEach(q => {
-                // Evaluasi jawaban (bisa handle string maupun array untuk multi-jawaban)
                 let isCorrect = false;
-                let userAnswer = (answers[q.id] || '').toString().replace(/\s+/g, '').toUpperCase();
+                let userAnswer = (answers[q.id] || '').toString().toUpperCase();
                 
+                const checkAnswer = (expectedAnsStr) => {
+                  if (expectedAnsStr === "-") {
+                    const cleanUserAns = userAnswer.replace(/[^A-Z0-9-]/g, '');
+                    if (cleanUserAns === "" || cleanUserAns === "-" || userAnswer.includes("TIDAK ADA") || userAnswer.includes("KOSONG") || userAnswer.includes("TIDAK")) {
+                      return true;
+                    }
+                    return false;
+                  }
+                  
+                  // Split by semicolon for multiple required codes
+                  const requiredCodes = expectedAnsStr.split(';').map(c => c.trim().toUpperCase());
+                  
+                  // Check if ALL required codes are present in userAnswer
+                  return requiredCodes.every(code => {
+                    // Escape regex chars
+                    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    // Ensure the code is not immediately followed by another digit or dot
+                    const regex = new RegExp(escapedCode + '(?!\\.|\\d)', 'i');
+                    return regex.test(userAnswer);
+                  });
+                };
+
                 if (Array.isArray(q.answer)) {
-                  isCorrect = q.answer.some(ans => ans.toString().replace(/\s+/g, '').toUpperCase() === userAnswer);
+                  isCorrect = q.answer.some(ans => checkAnswer(ans.toString()));
                 } else if (q.answer) {
-                  isCorrect = (userAnswer === q.answer.toString().replace(/\s+/g, '').toUpperCase());
+                  isCorrect = checkAnswer(q.answer.toString());
                 }
 
                 if (isCorrect) correctCount++;
