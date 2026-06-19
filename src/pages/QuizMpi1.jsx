@@ -295,7 +295,7 @@ const QuizMpi1 = () => {
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 5rem)' }}>
       {/* Left Panel - PDF Viewer */}
-      <div style={{ flex: 'none', width: '45%', minWidth: '30%', maxWidth: '70%', resize: 'horizontal', overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--color-border)', backgroundColor: '#f1f5f9' }}>
+      <div style={{ flex: 'none', width: '45%', minWidth: '30%', maxWidth: '70%', resize: 'horizontal', overflow: 'auto', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--color-border)', backgroundColor: '#f1f5f9' }}>
         <div style={{ padding: '1rem', backgroundColor: 'white', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FaFilePdf style={{ color: '#ef4444', fontSize: '1.2rem' }} />
           <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Referensi Soal - {currentCase.title}</h2>

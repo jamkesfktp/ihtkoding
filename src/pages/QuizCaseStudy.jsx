@@ -224,16 +224,18 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
       <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: '90vh' }}>
         {/* Left Side: PDF Viewer */}
         {currentCase.pdfUrl && (
-          <div className="card" style={{ flex: 'none', width: '60%', minWidth: '30%', maxWidth: '80%', resize: 'horizontal', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '1rem', backgroundColor: '#e2e8f0', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FaFilePdf style={{ color: '#ef4444' }}/>
-              <strong style={{ color: '#334155' }}>Referensi Rekam Medis - {currentCase.title}</strong>
+          <div style={{ flex: 'none', width: '60%', minWidth: '30%', maxWidth: '80%', resize: 'horizontal', overflow: 'auto', paddingRight: '10px' }}>
+            <div className="card" style={{ height: '100%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: '1rem', backgroundColor: '#e2e8f0', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FaFilePdf style={{ color: '#ef4444' }}/>
+                <strong style={{ color: '#334155' }}>Referensi Rekam Medis - {currentCase.title}</strong>
+              </div>
+              <iframe 
+                src={`${currentCase.pdfUrl}#view=FitH&toolbar=0`} 
+                style={{ width: '100%', height: '100%', minHeight: '800px', border: 'none', flex: 1 }} 
+                title="PDF Viewer"
+              />
             </div>
-            <iframe 
-              src={`${currentCase.pdfUrl}#view=FitH&toolbar=0`} 
-              style={{ width: '100%', height: '100%', minHeight: '800px', border: 'none', flex: 1 }} 
-              title="PDF Viewer"
-            />
           </div>
         )}
 
