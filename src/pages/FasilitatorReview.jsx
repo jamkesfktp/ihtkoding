@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaUserShield, FaCheck, FaTimes, FaSearch } from 'react-icons/fa';
+import { answerKeyMpi1 } from '../data/answerKeyMpi1';
+import { quizDataMpi2 } from '../data/quizDataMpi2';
+import { quizDataMpi3 } from '../data/quizDataMpi3';
+import { quizDataMpi4 } from '../data/quizDataMpi4';
+import { quizDataPreTest } from '../data/quizDataPreTest';
+import { quizDataPostTest } from '../data/quizDataPostTest';
 
 const FasilitatorReview = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -43,6 +49,32 @@ const FasilitatorReview = () => {
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const getCorrectAnswer = (quizTitle, key) => {
+    let quizData = null;
+    if (quizTitle.includes("MPI 2") || quizTitle.includes("MPI-2")) quizData = quizDataMpi2;
+    else if (quizTitle.includes("MPI 3") || quizTitle.includes("MPI-3")) quizData = quizDataMpi3;
+    else if (quizTitle.includes("MPI 4") || quizTitle.includes("MPI-4")) quizData = quizDataMpi4;
+    else if (quizTitle.includes("Pre-Test")) quizData = quizDataPreTest;
+    else if (quizTitle.includes("Post-Test")) quizData = quizDataPostTest;
+
+    if (!quizData || !quizData.cases) return null;
+
+    for (const c of quizData.cases) {
+      if (!c.questions) continue;
+      const q = c.questions.find(q => q.id === key);
+      if (q) {
+        if (quizTitle.includes("MPI 4") && c.keywords) {
+          return c.keywords.join(' ATAU ');
+        }
+        if (Array.isArray(q.answer)) {
+          return q.answer.join(' ATAU ');
+        }
+        return q.answer || '-';
+      }
+    }
+    return null;
   };
 
   const renderAnswers = (answers, quizTitle) => {
@@ -102,7 +134,7 @@ const FasilitatorReview = () => {
         { id: 'D1', label: 'Indikasi Rawat Inap' }
       ];
 
-      const renderScoreTable = (scoreData, title) => {
+      const renderScoreTable = (scoreData, title, caseId, type) => {
         if (!scoreData || Object.keys(scoreData).length === 0) return null;
         
         const params = title.includes("Kuantitatif") ? kuantitatifParams : kualitatifParams;
@@ -115,6 +147,7 @@ const FasilitatorReview = () => {
                 <tr style={{ backgroundColor: '#f1f5f9' }}>
                   <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'left' }}>Item Evaluasi</th>
                   <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '80px' }}>Skor</th>
+                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '80px' }}>Kunci</th>
                   <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'left' }}>Keterangan</th>
                 </tr>
               </thead>
@@ -136,6 +169,9 @@ const FasilitatorReview = () => {
                           borderRadius: '4px',
                           fontWeight: 'bold'
                         }}>{val.skor || '0'}</span>
+                      </td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', color: '#16a34a', fontWeight: 'bold' }}>
+                        {answerKeyMpi1[caseId]?.[type]?.[key] || '-'}
                       </td>
                       <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', color: '#334155' }}>{val.ket || '-'}</td>
                     </tr>
@@ -172,8 +208,8 @@ const FasilitatorReview = () => {
                 <details style={{ marginTop: '0.5rem', fontSize: '0.9rem', cursor: 'pointer' }}>
                   <summary style={{ fontWeight: 'bold', color: '#2563eb', padding: '0.5rem 0' }}>Lihat Skor Lengkap (Kuantitatif & Kualitatif)</summary>
                   <div style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #cbd5e1', marginTop: '0.5rem' }}>
-                    {renderScoreTable(data.kuantitatif, "Penilaian Kuantitatif")}
-                    {renderScoreTable(data.kualitatif, "Penilaian Kualitatif")}
+                    {renderScoreTable(data.kuantitatif, "Penilaian Kuantitatif", caseId, "kuantitatif")}
+                    {renderScoreTable(data.kualitatif, "Penilaian Kualitatif", caseId, "kualitatif")}
                   </div>
                 </details>
               </div>
@@ -199,10 +235,16 @@ const FasilitatorReview = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {Object.entries(answers).map(([key, val]) => {
             if (typeof val === 'object') return null; // Skip complex objects like MPI 1
+            const correctAns = getCorrectAnswer(quizTitle, key);
             return (
               <div key={key} style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
                 <strong>Soal / Item {key}:</strong>
                 <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap', color: '#475569', fontWeight: 600 }}>{val}</p>
+                {correctAns && (
+                  <div style={{ marginTop: '0.8rem', padding: '0.5rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    <strong>Kunci Jawaban:</strong> {correctAns}
+                  </div>
+                )}
               </div>
             );
           })}

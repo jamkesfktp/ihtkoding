@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaTrophy, FaMedal, FaSpinner } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
 const Leaderboard = () => {
+  const { userData } = useAuth();
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,6 +76,12 @@ const Leaderboard = () => {
   }, {});
 
   const rankedScores = Object.values(aggregatedScores).sort((a, b) => b.total - a.total);
+  
+  // Tampilkan semua jika admin/fasilitator, jika tidak, tampilkan hanya top 3 & nilai sendiri
+  const isAdmin = userData?.role === 'admin' || userData?.role === 'fasilitator' || userData?.isAdmin;
+  const displayedScores = isAdmin 
+    ? rankedScores 
+    : rankedScores.filter((row, index) => index < 3 || row.name === userData?.namaLengkap);
 
   if (loading) {
     return (
@@ -117,20 +125,24 @@ const Leaderboard = () => {
               </tr>
             </thead>
             <tbody>
-              {rankedScores.length === 0 ? (
+              {displayedScores.length === 0 ? (
                 <tr>
                   <td colSpan="14" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     Belum ada data ujian yang disubmit.
                   </td>
                 </tr>
               ) : (
-                rankedScores.map((row, index) => (
-                  <tr key={index} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: index % 2 === 0 ? 'white' : '#f8fafc' }}>
+                displayedScores.map((row) => {
+                  // Cari index asli dari rankedScores untuk mempertahankan rank sebenarnya
+                  const originalIndex = rankedScores.findIndex(r => r.name === row.name);
+                  
+                  return (
+                  <tr key={row.name} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: originalIndex % 2 === 0 ? 'white' : '#f8fafc' }}>
                     <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
-                      {index === 0 ? <FaMedal style={{ color: '#fbbf24', fontSize: '1.5rem' }} /> : 
-                       index === 1 ? <FaMedal style={{ color: '#94a3b8', fontSize: '1.5rem' }} /> : 
-                       index === 2 ? <FaMedal style={{ color: '#b45309', fontSize: '1.5rem' }} /> : 
-                       index + 1}
+                      {originalIndex === 0 ? <FaMedal style={{ color: '#fbbf24', fontSize: '1.5rem' }} /> : 
+                       originalIndex === 1 ? <FaMedal style={{ color: '#94a3b8', fontSize: '1.5rem' }} /> : 
+                       originalIndex === 2 ? <FaMedal style={{ color: '#b45309', fontSize: '1.5rem' }} /> : 
+                       originalIndex + 1}
                     </td>
                     <td style={{ padding: '1rem', fontWeight: 'bold', color: '#334155' }}>{row.name}</td>
                     <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>{row.instansi}</td>
@@ -149,19 +161,15 @@ const Leaderboard = () => {
                       {row.rataRata}
                     </td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
-                      <span style={{
-                        padding: '0.3rem 0.6rem',
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        fontWeight: 'bold',
-                        backgroundColor: row.lulus ? '#dcfce7' : '#fee2e2',
-                        color: row.lulus ? '#166534' : '#991b1b'
-                      }}>
-                        {row.lulus ? 'LULUS' : 'TIDAK LULUS'}
-                      </span>
+                      {row.lulus ? (
+                        <span style={{ backgroundColor: '#dcfce7', color: '#166534', padding: '0.3rem 0.6rem', borderRadius: '4px' }}>LULUS</span>
+                      ) : (
+                        <span style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '0.3rem 0.6rem', borderRadius: '4px' }}>TIDAK LULUS</span>
+                      )}
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
