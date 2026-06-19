@@ -289,9 +289,9 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
         )}
 
         {/* Right Side: Quiz Form */}
-        <div className="card" style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+        <div className="card" style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', overflowX: 'auto', overflowY: 'auto' }}>
           
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap', minWidth: '400px' }}>
              {quizData.cases.map((c, idx) => {
                 const isAnswered = c.questions.some(q => answers[q.id] && answers[q.id].trim() !== '');
                 const isCurrent = currentCaseIndex === idx;

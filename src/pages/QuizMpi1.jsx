@@ -364,8 +364,8 @@ const QuizMpi1 = () => {
       </div>
 
       {/* Right Panel - Evaluasi Form */}
-      <div style={{ flex: 1, overflowY: 'auto', backgroundColor: '#fafafa', position: 'relative' }}>
-        <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', backgroundColor: '#fafafa', position: 'relative' }}>
+        <div style={{ padding: '2rem', minWidth: '600px', maxWidth: '800px', margin: '0 auto' }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', backgroundColor: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <h2 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.5rem' }}>Analisis Resume Medis ({currentCase.title})</h2>
