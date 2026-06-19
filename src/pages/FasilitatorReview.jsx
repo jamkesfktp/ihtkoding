@@ -51,7 +51,7 @@ const FasilitatorReview = () => {
     }
   };
 
-  const getCorrectAnswer = (quizTitle, key) => {
+  const getAnswerDetails = (quizTitle, key, userAnswer) => {
     let quizData = null;
     if (quizTitle.includes("MPI 2") || quizTitle.includes("MPI-2")) quizData = quizDataMpi2;
     else if (quizTitle.includes("MPI 3") || quizTitle.includes("MPI-3")) quizData = quizDataMpi3;
@@ -65,13 +65,42 @@ const FasilitatorReview = () => {
       if (!c.questions) continue;
       const q = c.questions.find(q => q.id === key);
       if (q) {
+        let displayStr = '';
+        let isCorrect = false;
+        const uAns = (userAnswer || '').toString().toUpperCase();
+
         if (quizTitle.includes("MPI 4") && c.keywords) {
-          return c.keywords.join(' ATAU ');
+          displayStr = c.keywords.join(' ATAU ');
+          isCorrect = c.keywords.some(kw => uAns.includes(kw.toUpperCase()));
+        } else if (quizTitle.includes("Pre-Test") || quizTitle.includes("Post-Test")) {
+          displayStr = q.answer;
+          isCorrect = (userAnswer === q.answer);
+        } else {
+          // MPI 2 & 3
+          displayStr = Array.isArray(q.answer) ? q.answer.join(' ATAU ') : (q.answer || '-');
+          
+          const checkAns = (expectedAnsStr) => {
+            if (expectedAnsStr === "-") {
+              const cleanUserAns = uAns.replace(/[^A-Z0-9-]/g, '');
+              if (cleanUserAns === "" || cleanUserAns === "-" || uAns.includes("TIDAK ADA") || uAns.includes("KOSONG") || uAns.includes("TIDAK")) return true;
+              return false;
+            }
+            const requiredCodes = expectedAnsStr.split(';').map(x => x.trim().toUpperCase());
+            return requiredCodes.every(code => {
+              const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const regex = new RegExp(escapedCode + '(?!\\.|\\d)', 'i');
+              return regex.test(uAns);
+            });
+          };
+
+          if (Array.isArray(q.answer)) {
+            isCorrect = q.answer.some(ans => checkAns(ans.toString()));
+          } else {
+            isCorrect = checkAns((q.answer || '').toString());
+          }
         }
-        if (Array.isArray(q.answer)) {
-          return q.answer.join(' ATAU ');
-        }
-        return q.answer || '-';
+
+        return { displayStr, isCorrect };
       }
     }
     return null;
@@ -235,14 +264,28 @@ const FasilitatorReview = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {Object.entries(answers).map(([key, val]) => {
             if (typeof val === 'object') return null; // Skip complex objects like MPI 1
-            const correctAns = getCorrectAnswer(quizTitle, key);
+            const answerDetails = getAnswerDetails(quizTitle, key, val);
+            
             return (
               <div key={key} style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
-                <strong>Soal / Item {key}:</strong>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong>Soal / Item {key}:</strong>
+                  {answerDetails && (
+                    answerDetails.isCorrect ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#166534', backgroundColor: '#dcfce7', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        <FaCheck /> BENAR
+                      </span>
+                    ) : (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#991b1b', backgroundColor: '#fee2e2', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        <FaTimes /> SALAH
+                      </span>
+                    )
+                  )}
+                </div>
                 <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap', color: '#475569', fontWeight: 600 }}>{val}</p>
-                {correctAns && (
-                  <div style={{ marginTop: '0.8rem', padding: '0.5rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    <strong>Kunci Jawaban:</strong> {correctAns}
+                {answerDetails && (
+                  <div style={{ marginTop: '0.8rem', padding: '0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    <strong>Kunci Jawaban:</strong> {answerDetails.displayStr}
                   </div>
                 )}
               </div>
