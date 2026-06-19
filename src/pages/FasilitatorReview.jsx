@@ -264,7 +264,9 @@ const FasilitatorReview = () => {
     if (typeof answers === 'object') {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {Object.entries(answers).map(([key, val]) => {
+          {Object.entries(answers)
+            .sort(([keyA], [keyB]) => String(keyA).localeCompare(String(keyB), undefined, { numeric: true }))
+            .map(([key, val]) => {
             if (typeof val === 'object') return null; // Skip complex objects like MPI 1
             const answerDetails = getAnswerDetails(quizTitle, key, val);
             
