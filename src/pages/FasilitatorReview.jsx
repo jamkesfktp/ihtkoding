@@ -263,37 +263,49 @@ const FasilitatorReview = () => {
 
     if (typeof answers === 'object') {
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {Object.entries(answers).map(([key, val]) => {
             if (typeof val === 'object') return null; // Skip complex objects like MPI 1
             const answerDetails = getAnswerDetails(quizTitle, key, val);
             
             return (
-              <div key={key} style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong>Soal / Item {key}:</strong>
+              <div key={key} style={{ padding: '1.5rem', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #f1f5f9', paddingBottom: '1rem', marginBottom: '1rem' }}>
+                  <strong style={{ fontSize: '1.1rem', color: '#0f172a' }}>Soal / Item {key}</strong>
                   {answerDetails && (
                     answerDetails.scoreFraction === 1 ? (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#166534', backgroundColor: '#dcfce7', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#166534', backgroundColor: '#dcfce7', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid #bbf7d0' }}>
                         <FaCheck /> BENAR (Skor: 1)
                       </span>
                     ) : answerDetails.scoreFraction > 0 ? (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid #fde68a' }}>
                         <FaCheck /> BENAR SEBAGIAN (Skor: {answerDetails.scoreFraction.toFixed(2)})
                       </span>
                     ) : (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#991b1b', backgroundColor: '#fee2e2', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#991b1b', backgroundColor: '#fee2e2', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid #fecaca' }}>
                         <FaTimes /> SALAH (Skor: 0)
                       </span>
                     )
                   )}
                 </div>
-                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap', color: '#475569', fontWeight: 600 }}>{val}</p>
-                {answerDetails && (
-                  <div style={{ marginTop: '0.8rem', padding: '0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    <strong>Kunci Jawaban:</strong> {answerDetails.displayStr}
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Jawaban Peserta:</span>
+                    <p style={{ marginTop: '0.4rem', whiteSpace: 'pre-wrap', color: '#334155', fontWeight: 500, backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid #94a3b8' }}>
+                      {val || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Tidak diisi</span>}
+                    </p>
                   </div>
-                )}
+
+                  {answerDetails && (
+                    <div>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Kunci Jawaban:</span>
+                      <div style={{ marginTop: '0.4rem', padding: '1rem', backgroundColor: '#f0fdf4', color: '#166534', borderRadius: '8px', borderLeft: '4px solid #22c55e', fontWeight: 500 }}>
+                        {answerDetails.displayStr}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
