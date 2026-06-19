@@ -224,7 +224,7 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
       <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: '90vh' }}>
         {/* Left Side: PDF Viewer */}
         {currentCase.pdfUrl && (
-          <div className="card" style={{ flex: '1 1 60%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="card" style={{ flex: 'none', width: '60%', minWidth: '30%', maxWidth: '80%', resize: 'horizontal', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '1rem', backgroundColor: '#e2e8f0', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <FaFilePdf style={{ color: '#ef4444' }}/>
               <strong style={{ color: '#334155' }}>Referensi Rekam Medis - {currentCase.title}</strong>
@@ -238,7 +238,7 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
         )}
 
         {/* Right Side: Quiz Form */}
-        <div className="card" style={{ flex: '1 1 40%', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+        <div className="card" style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
           
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
              {quizData.cases.map((c, idx) => {
