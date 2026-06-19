@@ -78,6 +78,42 @@ const FasilitatorReview = () => {
     }
 
     if (quizTitle.includes("MPI 1")) {
+      const renderScoreTable = (scoreData, title) => {
+        if (!scoreData || Object.keys(scoreData).length === 0) return null;
+        
+        return (
+          <div style={{ marginTop: '1rem' }}>
+            <h5 style={{ margin: '0 0 0.5rem 0', color: '#334155', fontSize: '0.95rem' }}>{title}</h5>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f1f5f9' }}>
+                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '60px' }}>Item</th>
+                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '80px' }}>Skor</th>
+                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'left' }}>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(scoreData).map(([key, val]) => (
+                  <tr key={key}>
+                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', fontWeight: 'bold', textAlign: 'center', color: '#475569' }}>{key}</td>
+                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center' }}>
+                      <span style={{ 
+                        backgroundColor: val.skor ? '#dcfce7' : '#fee2e2', 
+                        color: val.skor ? '#166534' : '#991b1b',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px',
+                        fontWeight: 'bold'
+                      }}>{val.skor || '0'}</span>
+                    </td>
+                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', color: '#334155' }}>{val.ket || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      };
+
       // Rekap skor dari JSON structure
       return (
         <div style={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
@@ -101,10 +137,11 @@ const FasilitatorReview = () => {
                 </div>
 
                 <details style={{ marginTop: '0.5rem', fontSize: '0.9rem', cursor: 'pointer' }}>
-                  <summary style={{ fontWeight: 'bold', color: '#2563eb' }}>Lihat Skor Lengkap (Kuantitatif & Kualitatif)</summary>
-                  <pre style={{ backgroundColor: '#1e293b', color: '#f8fafc', padding: '1rem', borderRadius: '6px', overflowX: 'auto', marginTop: '0.5rem' }}>
-                    {JSON.stringify({ kuantitatif: data.kuantitatif, kualitatif: data.kualitatif }, null, 2)}
-                  </pre>
+                  <summary style={{ fontWeight: 'bold', color: '#2563eb', padding: '0.5rem 0' }}>Lihat Skor Lengkap (Kuantitatif & Kualitatif)</summary>
+                  <div style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #cbd5e1', marginTop: '0.5rem' }}>
+                    {renderScoreTable(data.kuantitatif, "Penilaian Kuantitatif")}
+                    {renderScoreTable(data.kualitatif, "Penilaian Kualitatif")}
+                  </div>
                 </details>
               </div>
             );
