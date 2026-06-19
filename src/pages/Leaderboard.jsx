@@ -64,6 +64,11 @@ const Leaderboard = () => {
     
     // Defaulting total to just sum for now, adjust based on needs.
     acc[name].total = acc[name].preTest + acc[name].mpi1 + acc[name].mpi2 + acc[name].mpi3 + acc[name].mpi4 + (acc[name].mpi5 || 0) + acc[name].postTest;
+    
+    // Calculate Average
+    // Assuming there are 7 components (PreTest, 5 MPIs, PostTest)
+    acc[name].rataRata = Math.round(acc[name].total / 7);
+    acc[name].lulus = acc[name].rataRata >= 80;
 
     return acc;
   }, {});
@@ -107,12 +112,14 @@ const Leaderboard = () => {
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 5</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>Post-Test</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center', backgroundColor: '#0369a1' }}>TOTAL</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center', backgroundColor: '#0284c7' }}>Rata-rata</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center', backgroundColor: '#0ea5e9' }}>Status</th>
               </tr>
             </thead>
             <tbody>
               {rankedScores.length === 0 ? (
                 <tr>
-                  <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  <td colSpan="14" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     Belum ada data ujian yang disubmit.
                   </td>
                 </tr>
@@ -137,6 +144,21 @@ const Leaderboard = () => {
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.postTest}</td>
                     <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '1.1rem', color: '#0ea5e9' }}>
                       {row.total}
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '1.1rem', color: '#0284c7' }}>
+                      {row.rataRata}
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'center' }}>
+                      <span style={{
+                        padding: '0.3rem 0.6rem',
+                        borderRadius: '20px',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold',
+                        backgroundColor: row.lulus ? '#dcfce7' : '#fee2e2',
+                        color: row.lulus ? '#166534' : '#991b1b'
+                      }}>
+                        {row.lulus ? 'LULUS' : 'TIDAK LULUS'}
+                      </span>
                     </td>
                   </tr>
                 ))
