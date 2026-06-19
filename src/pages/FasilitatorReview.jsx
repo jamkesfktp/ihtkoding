@@ -78,36 +78,74 @@ const FasilitatorReview = () => {
     }
 
     if (quizTitle.includes("MPI 1")) {
+      const kuantitatifParams = [
+        { id: 'A1', label: 'Kesesuaian Tanggal' },
+        { id: 'B1', label: 'Identitas Pasien Lengkap' },
+        { id: 'B2', label: 'Tanggal & Jam Masuk/Keluar' },
+        { id: 'B3', label: 'Anamnesis & Kondisi Saat Masuk' },
+        { id: 'B4', label: 'Diagnosa Utama & Sekunder' },
+        { id: 'B5', label: 'Prosedur/Tindakan Medis' },
+        { id: 'B6', label: 'Pengobatan & Tatalaksana' },
+        { id: 'B7', label: 'Hasil Pemeriksaan Penunjang' },
+        { id: 'B8', label: 'Kondisi & Rencana Saat Pulang' },
+        { id: 'B9', label: 'Autentikasi DPJP (Nama & TTD)' },
+        { id: 'B10', label: 'Tanggal Pembuatan Resume' },
+        { id: 'C1', label: 'Surat Keterangan Meninggal*' },
+        { id: 'C2', label: 'Laporan Operasi/Tindakan' },
+        { id: 'C3', label: 'Informed Consent*' }
+      ];
+
+      const kualitatifParams = [
+        { id: 'A1', label: 'Diagnosa Utama vs Temuan Klinis' },
+        { id: 'A2', label: 'Diagnosa Sekunder vs Komorbid' },
+        { id: 'A3', label: 'Urutan Penulisan Diagnosa' },
+        { id: 'B1', label: 'Pengobatan dengan Diagnosis' },
+        { id: 'B2', label: 'Prosedur Utama & Diagnosa Utama' },
+        { id: 'C1', label: 'Kelengkapan Data dalam Resume' },
+        { id: 'C2', label: 'Konsistensi dengan Laporan Tindakan' },
+        { id: 'C3', label: 'Kesesuaian dengan Hasil Penunjang' },
+        { id: 'D1', label: 'Indikasi Rawat Inap' }
+      ];
+
       const renderScoreTable = (scoreData, title) => {
         if (!scoreData || Object.keys(scoreData).length === 0) return null;
         
+        const params = title.includes("Kuantitatif") ? kuantitatifParams : kualitatifParams;
+
         return (
           <div style={{ marginTop: '1rem' }}>
             <h5 style={{ margin: '0 0 0.5rem 0', color: '#334155', fontSize: '0.95rem' }}>{title}</h5>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', marginBottom: '1rem' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f1f5f9' }}>
-                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '60px' }}>Item</th>
+                  <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'left' }}>Item Evaluasi</th>
                   <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center', width: '80px' }}>Skor</th>
                   <th style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'left' }}>Keterangan</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(scoreData).map(([key, val]) => (
-                  <tr key={key}>
-                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', fontWeight: 'bold', textAlign: 'center', color: '#475569' }}>{key}</td>
-                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center' }}>
-                      <span style={{ 
-                        backgroundColor: val.skor ? '#dcfce7' : '#fee2e2', 
-                        color: val.skor ? '#166534' : '#991b1b',
-                        padding: '0.2rem 0.5rem',
-                        borderRadius: '4px',
-                        fontWeight: 'bold'
-                      }}>{val.skor || '0'}</span>
-                    </td>
-                    <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', color: '#334155' }}>{val.ket || '-'}</td>
-                  </tr>
-                ))}
+                {Object.entries(scoreData).map(([key, val]) => {
+                  const paramDef = params.find(p => p.id === key);
+                  const label = paramDef ? paramDef.label : key;
+
+                  return (
+                    <tr key={key}>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', color: '#475569' }}>
+                        <strong>{key}</strong> - {label}
+                      </td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', textAlign: 'center' }}>
+                        <span style={{ 
+                          backgroundColor: val.skor ? '#dcfce7' : '#fee2e2', 
+                          color: val.skor ? '#166534' : '#991b1b',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '4px',
+                          fontWeight: 'bold'
+                        }}>{val.skor || '0'}</span>
+                      </td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '0.5rem', color: '#334155' }}>{val.ket || '-'}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
