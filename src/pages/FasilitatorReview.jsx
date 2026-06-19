@@ -187,6 +187,17 @@ const FasilitatorReview = () => {
         </div>
       );
     }
+    
+    if (quizTitle.includes("MPI 5") && answers.linkSlide) {
+      return (
+        <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+          <h4 style={{ color: '#0f172a', marginBottom: '0.5rem' }}>Link Presentasi Google Slides:</h4>
+          <a href={answers.linkSlide} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline', wordBreak: 'break-all' }}>
+            {answers.linkSlide}
+          </a>
+        </div>
+      );
+    }
 
     return <pre>{JSON.stringify(answers, null, 2)}</pre>;
   };

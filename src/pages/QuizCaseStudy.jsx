@@ -140,19 +140,31 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
           let totalQuestions = getTotalQuestions();
 
           quizData.cases.forEach(c => {
-            c.questions.forEach(q => {
-              // Evaluasi jawaban (bisa handle string maupun array untuk multi-jawaban)
-              let isCorrect = false;
-              let userAnswer = (answers[q.id] || '').toString().replace(/\s+/g, '').toUpperCase();
-              
-              if (Array.isArray(q.answer)) {
-                isCorrect = q.answer.some(ans => ans.toString().replace(/\s+/g, '').toUpperCase() === userAnswer);
-              } else if (q.answer) {
-                isCorrect = (userAnswer === q.answer.toString().replace(/\s+/g, '').toUpperCase());
-              }
+            if (c.keywords && c.keywords.length > 0) {
+              // Penilaian berbasis keyword untuk MPI 4 dsb
+              let caseCorrect = false;
+              c.questions.forEach(q => {
+                let userAnswer = (answers[q.id] || '').toString().toUpperCase();
+                if (c.keywords.some(kw => userAnswer.includes(kw.toUpperCase()))) {
+                  caseCorrect = true;
+                }
+              });
+              if (caseCorrect) correctCount += c.questions.length; // anggap semua pertanyaan di kasus ini benar
+            } else {
+              c.questions.forEach(q => {
+                // Evaluasi jawaban (bisa handle string maupun array untuk multi-jawaban)
+                let isCorrect = false;
+                let userAnswer = (answers[q.id] || '').toString().replace(/\s+/g, '').toUpperCase();
+                
+                if (Array.isArray(q.answer)) {
+                  isCorrect = q.answer.some(ans => ans.toString().replace(/\s+/g, '').toUpperCase() === userAnswer);
+                } else if (q.answer) {
+                  isCorrect = (userAnswer === q.answer.toString().replace(/\s+/g, '').toUpperCase());
+                }
 
-              if (isCorrect) correctCount++;
-            });
+                if (isCorrect) correctCount++;
+              });
+            }
           });
 
           calculatedScore = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;

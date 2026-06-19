@@ -5,6 +5,7 @@ import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimest
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
+import { answerKeyMpi1 } from '../data/answerKeyMpi1';
 
 const cases = [
   { id: 1, title: "Kasus RM 1", pdfUrl: "/pdfs/mpi1-soal-1.pdf" },
@@ -220,8 +221,34 @@ const QuizMpi1 = () => {
     setIsSubmitting(true);
     
     try {
+      let calculatedScore = 0;
+      let totalMatched = 0;
+      let totalItems = 0;
+
+      Object.keys(answers).forEach(caseId => {
+        const caseAnswers = answers[caseId];
+        const caseKey = answerKeyMpi1[caseId];
+        if (caseKey) {
+          Object.keys(caseKey.kuantitatif).forEach(param => {
+            totalItems++;
+            if (caseAnswers.kuantitatif[param]?.skor === caseKey.kuantitatif[param]) {
+              totalMatched++;
+            }
+          });
+          Object.keys(caseKey.kualitatif).forEach(param => {
+            totalItems++;
+            if (caseAnswers.kualitatif[param]?.skor === caseKey.kualitatif[param]) {
+              totalMatched++;
+            }
+          });
+        }
+      });
+
+      calculatedScore = totalItems > 0 ? Math.round((totalMatched / totalItems) * 100) : 0;
+
       if (submissionId) {
         await updateDoc(doc(db, "scores", submissionId), {
+          score: calculatedScore,
           answers: answers,
           editCount: editCount + 1,
           lastEdited: serverTimestamp()
@@ -234,7 +261,7 @@ const QuizMpi1 = () => {
           participantName: userData.namaLengkap || userData.username || 'Unknown',
           instansi: userData.instansi || '-',
           kelompok: userData.kelompok || '-',
-          score: "Pending",
+          score: calculatedScore,
           answers: answers,
           editCount: 0,
           timestamp: serverTimestamp()

@@ -1,0 +1,176 @@
+
+--- Slide 6 ---
+Jawaban Soal No. 1
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Error: Rehab. Comprehensive Exam. w/o Diagnostic Procedures
+‹#›
+
+--- Slide 7 ---
+Jawaban Soal No. 1
+‹#›
+
+
+
+AKAR PERMASALAHAN
+Diagnosa utama tidak
+berkaitan/unrelated dengan tindakan
+
+
+PENYELESAIAN	MASALAH
+Ditambahkan Kode Uji Fungsi (93.01)
+Ditambahkan kode Diathermy (93.34)
+
+
+--- Slide 8 ---
+Jawaban Soal No. 2
+‹#›
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Unacceptable obs. diag. comb. 0
+
+--- Slide 9 ---
+Jawaban Soal No. 2
+‹#›
+
+
+AKAR PERMASALAHAN
+Diagnosa Tidak Diterima, Outcome Of Delivery belum dientry
+
+
+PENYELESAIAN	MASALAH
+Selalu Pedomani Condition(s) Of Mother, Method Of Delivery dan Outcome Of Delivery
+Ditambahkan kode Z37.3
+
+--- Slide 10 ---
+Jawaban Soal No. 3
+‹#›
+
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Unrelated OR Procedures
+
+--- Slide 11 ---
+Jawaban Soal No. 3 (1)
+‹#›
+AKAR PERMASALAHAN
+Diagnosa utama tidak
+berkaitan/unrelated dengan tindakan
+
+
+PENYELESAIAN	MASALAH
+Ganti kode DU menjadi E11.5, jika Debridement (86.22) dilakukan di Kamar Operasi, karena kemungkinan resource nya lebih besar dari J15.0
+Jika Debridement yang dimaksud bukan dilakuakn di kamar Operasi, ganti kode menjadi 86.28, DU tetap J15.0
+
+
+--- Slide 12 ---
+Jawaban Soal No. 3 (2)
+‹#›
+AKAR PERMASALAHAN
+Diagnosa utama tidak
+berkaitan/unrelated dengan tindakan
+
+
+PENYELESAIAN	MASALAH
+Ganti kode DU menjadi E11.5, jika Debridement (86.22) dilakukan di Kamar Operasi, karean kemungkinan resource nya lebih besar dari J15.0
+Jika Debridement yang dimaksud bukan dilakuakn di Kamar Operasi, ganti kode menjadi 86.28, DU tetap J15.0
+
+
+--- Slide 13 ---
+Jawaban Soal No. 4
+‹#›
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Diagnosis code H25.2 is not valid for patient's age : 28 years 11322 10591 54786
+28 Tahun
+
+--- Slide 14 ---
+
+Jawaban Soal No. 4  (1)
+
+
+AKAR PERMASALAHAN
+Diagnosa utama tidak berkaitan/unrelated dengan Umur Pasien
+
+PENYELESAIAN	MASALAH
+Cek lagi inputan tanggal lahir (umur) pasien, Kode H25.x akan support jika umur pasien lebih dari 30 Tahun
+Tambahkan Lateralisasi Kode IM (HL00, Right Eye)
+61 tahun
+Kode IM
+‹#›
+
+--- Slide 15 ---
+
+Jawaban Soal No. 4 (2)
+
+
+AKAR PERMASALAHAN
+Diagnosa utama tidak berkaitan/unrelated dengan Umur Pasien
+
+PENYELESAIAN	MASALAH
+Atau konfirmasi ke DPJP, terkait dengan diagnosis Kode H26.0 sd H26.9 support meski umur pasien kurang dari 30 Tahun
+Tambahkan Lateralisasi Kode IM (HL00, Right Eye)
+61 tahun
+Kode IM
+‹#›
+
+
+--- Slide 16 ---
+Jawaban Soal No. 5
+‹#›
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Error: Respiratory Drug Resistance TB w/o Drug Types
+
+--- Slide 17 ---
+Jawaban Soal No. 5
+‹#›
+
+
+
+AKAR PERMASALAHAN
+Diagnosis resisten, tanpa ada
+Type/Jenis obat
+
+PENYELESAIAN	MASALAH
+1.	Tambahkan Kode ICD prosedur IM,
+Drug Type (resistensi), (U83.3)
+
+--- Slide 18 ---
+Jawaban Soal No. 6
+‹#›
+
+
+
+
+HASIL GROUPING
+MDC : Ungroupable or Unrelated DRG : Error coding: PTCA w/o Number of Vessels
+
+--- Slide 19 ---
+Jawaban Soal No. 6
+‹#›
+
+
+AKAR PERMASALAHAN
+Diagnosa utama tidak berkaitan/unrelated dengan tindakan, karena PTCA tidak diikuti dengan minimal kode Tindakan jumlah pembuluh darah koroner utama
+
+
+PENYELESAIAN	MASALAH
+Tambah kode 00.40 (Procedure on single vessel)
+
+--- Slide 20 ---
