@@ -14,6 +14,8 @@ const FasilitatorReview = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSub, setSelectedSub] = useState(null);
   const [inputScore, setInputScore] = useState('');
+  const [inputKeaktifan, setInputKeaktifan] = useState('');
+  const [inputPresentasi, setInputPresentasi] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [filter, setFilter] = useState('All');
 
@@ -38,11 +40,15 @@ const FasilitatorReview = () => {
     try {
       const scoreRef = doc(db, "scores", selectedSub.id);
       await updateDoc(scoreRef, {
-        score: parseInt(inputScore, 10)
+        score: parseInt(inputScore, 10),
+        nilaiKeaktifan: inputKeaktifan ? parseInt(inputKeaktifan, 10) : 0,
+        nilaiPresentasi: inputPresentasi ? parseInt(inputPresentasi, 10) : 0
       });
       alert("Skor berhasil diperbarui!");
       setSelectedSub(null);
       setInputScore('');
+      setInputKeaktifan('');
+      setInputPresentasi('');
     } catch (error) {
       console.error("Error updating score: ", error);
       alert("Terjadi kesalahan.");
@@ -355,7 +361,10 @@ const FasilitatorReview = () => {
                   <th style={{ padding: '1rem' }}>Nama Peserta</th>
                   <th style={{ padding: '1rem' }}>Kelompok</th>
                   <th style={{ padding: '1rem' }}>Penugasan</th>
-                  <th style={{ padding: '1rem', textAlign: 'center' }}>Skor</th>
+                  <th style={{ padding: '1rem', textAlign: 'center' }}>Skor Asli</th>
+                  <th style={{ padding: '1rem', textAlign: 'center' }}>Keaktifan</th>
+                  <th style={{ padding: '1rem', textAlign: 'center' }}>Presentasi</th>
+                  <th style={{ padding: '1rem', textAlign: 'center', backgroundColor: '#0369a1' }}>Total Skor</th>
                   <th style={{ padding: '1rem', textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
@@ -380,9 +389,19 @@ const FasilitatorReview = () => {
                           <span style={{ backgroundColor: '#dcfce7', color: '#166534', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.9rem', fontWeight: 'bold' }}>{sub.score}</span>
                         )}
                       </td>
+                      <td style={{ padding: '1rem', textAlign: 'center', color: '#64748b' }}>{sub.nilaiKeaktifan || 0}</td>
+                      <td style={{ padding: '1rem', textAlign: 'center', color: '#64748b' }}>{sub.nilaiPresentasi || 0}</td>
+                      <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: '#0ea5e9' }}>
+                        {sub.score === 'Pending' ? '-' : (parseInt(sub.score || 0) + parseInt(sub.nilaiKeaktifan || 0) + parseInt(sub.nilaiPresentasi || 0))}
+                      </td>
                       <td style={{ padding: '1rem', textAlign: 'center' }}>
                         <button 
-                          onClick={() => { setSelectedSub(sub); setInputScore(sub.score === 'Pending' ? '' : sub.score); }}
+                          onClick={() => { 
+                            setSelectedSub(sub); 
+                            setInputScore(sub.score === 'Pending' ? '' : sub.score); 
+                            setInputKeaktifan(sub.nilaiKeaktifan || '');
+                            setInputPresentasi(sub.nilaiPresentasi || '');
+                          }}
                           style={{ backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.9rem' }}
                         >
                           <FaSearch /> Review
@@ -418,16 +437,45 @@ const FasilitatorReview = () => {
               {renderAnswers(selectedSub.answers, selectedSub.quizTitle)}
             </div>
 
-            <div style={{ padding: '1.5rem', borderTop: '1px solid #e2e8f0', backgroundColor: '#f8fafc', borderRadius: '0 0 8px 8px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>Input / Update Skor (0-100)</label>
-                <input 
-                  type="number" 
-                  value={inputScore}
-                  onChange={(e) => setInputScore(e.target.value)}
-                  placeholder="Masukkan angka 0-100"
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '1rem' }}
-                />
+            <div style={{ padding: '1.5rem', borderTop: '1px solid #e2e8f0', backgroundColor: '#f8fafc', borderRadius: '0 0 8px 8px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>Skor Asli (0-100)</label>
+                  <input 
+                    type="number" 
+                    value={inputScore}
+                    onChange={(e) => setInputScore(e.target.value)}
+                    placeholder="Nilai Kuis"
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '1rem' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>Nilai Keaktifan</label>
+                  <input 
+                    type="number" 
+                    value={inputKeaktifan}
+                    onChange={(e) => setInputKeaktifan(e.target.value)}
+                    placeholder="Bonus Keaktifan"
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '1rem' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>Nilai Presentasi</label>
+                  <input 
+                    type="number" 
+                    value={inputPresentasi}
+                    onChange={(e) => setInputPresentasi(e.target.value)}
+                    placeholder="Skor Presentasi"
+                    style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '1rem' }}
+                  />
+                </div>
+              </div>
+              
+              <div style={{ padding: '1rem', backgroundColor: '#e0f2fe', borderRadius: '8px', border: '1px solid #bae6fd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 600, color: '#0369a1' }}>Total Skor Keseluruhan:</span>
+                <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#0284c7' }}>
+                  {(parseInt(inputScore || 0) + parseInt(inputKeaktifan || 0) + parseInt(inputPresentasi || 0))}
+                </span>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
                 <button onClick={() => setSelectedSub(null)} className="btn btn-outline" style={{ padding: '0.8rem 1.5rem' }} disabled={isUpdating}>Tutup</button>

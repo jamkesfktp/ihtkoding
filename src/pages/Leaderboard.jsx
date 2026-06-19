@@ -48,15 +48,15 @@ const Leaderboard = () => {
     
     // Map title to column
     const title = curr.quizTitle.toLowerCase();
-    let score = curr.score || 0;
+    let score = curr.score === 'Pending' ? 0 : (parseInt(curr.score || 0) + parseInt(curr.nilaiKeaktifan || 0) + parseInt(curr.nilaiPresentasi || 0));
     
-    if (title.includes('pre')) acc[name].preTest = score === 'Pending' ? 0 : score;
-    else if (title.includes('mpi 1') || title.includes('mpi-1')) acc[name].mpi1 = score === 'Pending' ? 0 : score;
-    else if (title.includes('mpi 2') || title.includes('mpi-2')) acc[name].mpi2 = score === 'Pending' ? 0 : score;
-    else if (title.includes('mpi 3') || title.includes('mpi-3')) acc[name].mpi3 = score === 'Pending' ? 0 : score;
-    else if (title.includes('mpi 4') || title.includes('mpi-4')) acc[name].mpi4 = score === 'Pending' ? 0 : score;
-    else if (title.includes('mpi 5') || title.includes('mpi-5')) acc[name].mpi5 = score === 'Pending' ? 0 : score;
-    else if (title.includes('post')) acc[name].postTest = score === 'Pending' ? 0 : score;
+    if (title.includes('pre')) acc[name].preTest = score;
+    else if (title.includes('mpi 1') || title.includes('mpi-1')) acc[name].mpi1 = score;
+    else if (title.includes('mpi 2') || title.includes('mpi-2')) acc[name].mpi2 = score;
+    else if (title.includes('mpi 3') || title.includes('mpi-3')) acc[name].mpi3 = score;
+    else if (title.includes('mpi 4') || title.includes('mpi-4')) acc[name].mpi4 = score;
+    else if (title.includes('mpi 5') || title.includes('mpi-5')) acc[name].mpi5 = score;
+    else if (title.includes('post')) acc[name].postTest = score;
 
     // Use average for leaderboard rank
     const mpiTotal = acc[name].mpi1 + acc[name].mpi2 + acc[name].mpi3 + acc[name].mpi4 + (acc[name].mpi5 || 0);
