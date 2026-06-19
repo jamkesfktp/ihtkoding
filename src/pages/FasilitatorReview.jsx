@@ -15,13 +15,8 @@ const FasilitatorReview = () => {
     const q = query(collection(db, "scores"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Filter only manual scored quizzes
-      const manualQuizzes = data.filter(d => 
-        d.quizTitle?.includes("MPI 1") || 
-        d.quizTitle?.includes("MPI 4") || 
-        d.quizTitle?.includes("MPI 5")
-      );
-      setSubmissions(manualQuizzes);
+      // Tampilkan semua data ujian tanpa filter
+      setSubmissions(data);
       setLoading(false);
     });
 
@@ -199,6 +194,22 @@ const FasilitatorReview = () => {
       );
     }
 
+    if (typeof answers === 'object') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {Object.entries(answers).map(([key, val]) => {
+            if (typeof val === 'object') return null; // Skip complex objects like MPI 1
+            return (
+              <div key={key} style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+                <strong>Soal / Item {key}:</strong>
+                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap', color: '#475569', fontWeight: 600 }}>{val}</p>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
     return <pre>{JSON.stringify(answers, null, 2)}</pre>;
   };
 
@@ -217,7 +228,7 @@ const FasilitatorReview = () => {
             <h1 style={{ color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
               <FaUserShield /> Dashboard Fasilitator
             </h1>
-            <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Review penugasan manual (MPI 1, MPI 4, MPI 5) dan berikan skor.</p>
+            <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Review penugasan manual dan lihat seluruh jawaban peserta.</p>
           </div>
           <select 
             value={filter} 
