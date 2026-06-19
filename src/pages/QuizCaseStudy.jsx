@@ -152,38 +152,41 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
               if (caseCorrect) correctCount += c.questions.length; // anggap semua pertanyaan di kasus ini benar
             } else {
               c.questions.forEach(q => {
-                let isCorrect = false;
+                let scoreFraction = 0;
                 let userAnswer = (answers[q.id] || '').toString().toUpperCase();
                 
                 const checkAnswer = (expectedAnsStr) => {
                   if (expectedAnsStr === "-") {
                     const cleanUserAns = userAnswer.replace(/[^A-Z0-9-]/g, '');
                     if (cleanUserAns === "" || cleanUserAns === "-" || userAnswer.includes("TIDAK ADA") || userAnswer.includes("KOSONG") || userAnswer.includes("TIDAK")) {
-                      return true;
+                      return 1;
                     }
-                    return false;
+                    return 0;
                   }
                   
                   // Split by semicolon for multiple required codes
                   const requiredCodes = expectedAnsStr.split(';').map(c => c.trim().toUpperCase());
                   
-                  // Check if ALL required codes are present in userAnswer
-                  return requiredCodes.every(code => {
+                  // Check if required codes are present in userAnswer
+                  let matchCount = 0;
+                  requiredCodes.forEach(code => {
                     // Escape regex chars
                     const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                     // Ensure the code is not immediately followed by another digit or dot
                     const regex = new RegExp(escapedCode + '(?!\\.|\\d)', 'i');
-                    return regex.test(userAnswer);
+                    if (regex.test(userAnswer)) matchCount++;
                   });
+                  
+                  return matchCount / requiredCodes.length;
                 };
 
                 if (Array.isArray(q.answer)) {
-                  isCorrect = q.answer.some(ans => checkAnswer(ans.toString()));
+                  scoreFraction = Math.max(...q.answer.map(ans => checkAnswer(ans.toString())));
                 } else if (q.answer) {
-                  isCorrect = checkAnswer(q.answer.toString());
+                  scoreFraction = checkAnswer(q.answer.toString());
                 }
 
-                if (isCorrect) correctCount++;
+                correctCount += scoreFraction;
               });
             }
           });

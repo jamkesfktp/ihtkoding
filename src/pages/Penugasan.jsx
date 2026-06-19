@@ -141,6 +141,27 @@ const Penugasan = () => {
             </div>
           </div>
 
+          {/* Card untuk Formulir RTL */}
+          <div className="card" style={{ padding: '2rem', border: '2px solid #3b82f6', marginTop: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, color: '#2563eb', fontSize: '1.4rem' }}>
+                  <FaTasks /> Formulir RTL
+                </h3>
+                <p style={{ marginTop: '0.5rem', color: 'var(--color-text-light)' }}>
+                  Isi dan cetak Rencana Tindak Lanjut (RTL) Koder sebelum mengikuti post-test.
+                </p>
+              </div>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => navigate('/rtl-form')}
+                style={{ fontSize: '1.1rem', padding: '0.8rem 1.5rem', backgroundColor: '#3b82f6', borderColor: '#3b82f6' }}
+              >
+                Isi Formulir RTL
+              </button>
+            </div>
+          </div>
+
           {/* Card untuk Post-Test */}
           <div className="card" style={{ padding: '2rem', border: '2px solid #ec4899', marginTop: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>

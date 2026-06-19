@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
-import { FaSave, FaPrint, FaPlus, FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaSave, FaPrint, FaPlus, FaTrash, FaCheckCircle, FaExclamationCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import './RtlForm.css';
 
 export default function RtlForm() {
@@ -139,6 +139,15 @@ export default function RtlForm() {
             >
               <FaPrint /> Cetak / PDF
             </button>
+            <a 
+              href="https://docs.google.com/document/d/1HsYJOBTUTurGlY5Hsn-tKYipJBp1222f/edit" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-rtl-add"
+              style={{ marginTop: 0, border: '1px solid #cbd5e1', color: '#475569', textDecoration: 'none' }}
+            >
+              <FaExternalLinkAlt /> Lihat Contoh
+            </a>
           </div>
         </div>
 
