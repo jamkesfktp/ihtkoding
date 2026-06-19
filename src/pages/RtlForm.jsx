@@ -140,13 +140,12 @@ export default function RtlForm() {
               <FaPrint /> Cetak / PDF
             </button>
             <a 
-              href="https://docs.google.com/document/d/1HsYJOBTUTurGlY5Hsn-tKYipJBp1222f/edit" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/downloads/Contoh_RTL_Koder.docx" 
+              download="Contoh_RTL_Koder.docx"
               className="btn-rtl-add"
               style={{ marginTop: 0, border: '1px solid #cbd5e1', color: '#475569', textDecoration: 'none' }}
             >
-              <FaExternalLinkAlt /> Lihat Contoh
+              <FaExternalLinkAlt /> Unduh Contoh
             </a>
           </div>
         </div>
