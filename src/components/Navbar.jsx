@@ -34,6 +34,7 @@ const Navbar = () => {
     { path: '/jadwal', label: 'Jadwal', public: true },
     { path: '/materi', label: 'Materi' },
     { path: '/penugasan', label: 'Penugasan' },
+    { path: '/rtl-form', label: 'Formulir RTL' },
     { path: '/leaderboard', label: 'Leaderboard' }
   ];
 

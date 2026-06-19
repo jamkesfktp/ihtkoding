@@ -22,6 +22,7 @@ import ManajemenUser from './pages/ManajemenUser';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import MenungguPersetujuan from './pages/MenungguPersetujuan';
+import RtlForm from './pages/RtlForm';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -44,6 +45,7 @@ function App() {
               <Route path="/materi" element={<ProtectedRoute><Materi /></ProtectedRoute>} />
               <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
               <Route path="/penugasan" element={<ProtectedRoute><Penugasan /></ProtectedRoute>} />
+              <Route path="/rtl-form" element={<ProtectedRoute><RtlForm /></ProtectedRoute>} />
               <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
               
               <Route path="/quiz-mpi1" element={<ProtectedRoute><QuizMpi1 /></ProtectedRoute>} />
