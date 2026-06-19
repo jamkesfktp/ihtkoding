@@ -48,14 +48,22 @@ const Leaderboard = () => {
     const title = curr.quizTitle.toLowerCase();
     let score = curr.score || 0;
     
-    if (title.includes('pre')) acc[name].preTest = score;
-    else if (title.includes('mpi 1') || title.includes('mpi-1')) acc[name].mpi1 = score;
-    else if (title.includes('mpi 2') || title.includes('mpi-2')) acc[name].mpi2 = score;
-    else if (title.includes('mpi 3') || title.includes('mpi-3')) acc[name].mpi3 = score;
-    else if (title.includes('mpi 4') || title.includes('mpi-4')) acc[name].mpi4 = score;
-    else if (title.includes('post')) acc[name].postTest = score;
+    if (title.includes('pre')) acc[name].preTest = score === 'Pending' ? 0 : score;
+    else if (title.includes('mpi 1') || title.includes('mpi-1')) acc[name].mpi1 = score === 'Pending' ? 0 : score;
+    else if (title.includes('mpi 2') || title.includes('mpi-2')) acc[name].mpi2 = score === 'Pending' ? 0 : score;
+    else if (title.includes('mpi 3') || title.includes('mpi-3')) acc[name].mpi3 = score === 'Pending' ? 0 : score;
+    else if (title.includes('mpi 4') || title.includes('mpi-4')) acc[name].mpi4 = score === 'Pending' ? 0 : score;
+    else if (title.includes('mpi 5') || title.includes('mpi-5')) acc[name].mpi5 = score === 'Pending' ? 0 : score;
+    else if (title.includes('post')) acc[name].postTest = score === 'Pending' ? 0 : score;
 
-    acc[name].total = acc[name].preTest + acc[name].mpi1 + acc[name].mpi2 + acc[name].mpi3 + acc[name].mpi4 + acc[name].postTest;
+    // Use average for leaderboard rank
+    const mpiTotal = acc[name].mpi1 + acc[name].mpi2 + acc[name].mpi3 + acc[name].mpi4 + (acc[name].mpi5 || 0);
+    // You can customize the weighting here. Let's do simple sum of average MPI + Post Test.
+    // Total = (Average of MPI 1-5) + Post Test
+    const averageMpi = mpiTotal / 5;
+    
+    // Defaulting total to just sum for now, adjust based on needs.
+    acc[name].total = acc[name].preTest + acc[name].mpi1 + acc[name].mpi2 + acc[name].mpi3 + acc[name].mpi4 + (acc[name].mpi5 || 0) + acc[name].postTest;
 
     return acc;
   }, {});
@@ -96,6 +104,7 @@ const Leaderboard = () => {
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 2</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 3</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 4</th>
+                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>MPI 5</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>Post-Test</th>
                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'center', backgroundColor: '#0369a1' }}>TOTAL</th>
               </tr>
@@ -103,7 +112,7 @@ const Leaderboard = () => {
             <tbody>
               {rankedScores.length === 0 ? (
                 <tr>
-                  <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     Belum ada data ujian yang disubmit.
                   </td>
                 </tr>
@@ -124,6 +133,7 @@ const Leaderboard = () => {
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi2}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi3}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi4}</td>
+                    <td style={{ padding: '1rem', textAlign: 'center' }}>{row.mpi5 || 0}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>{row.postTest}</td>
                     <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '1.1rem', color: '#0ea5e9' }}>
                       {row.total}
