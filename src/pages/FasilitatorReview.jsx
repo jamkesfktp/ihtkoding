@@ -18,6 +18,7 @@ const FasilitatorReview = () => {
   const [inputPresentasi, setInputPresentasi] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, "scores"), orderBy("timestamp", "desc"));
@@ -325,8 +326,9 @@ const FasilitatorReview = () => {
   };
 
   const filteredSubmissions = submissions.filter(s => {
-    if (filter === 'Pending') return s.score === 'Pending';
-    if (filter === 'Scored') return s.score !== 'Pending';
+    if (filter === 'Pending' && s.score !== 'Pending') return false;
+    if (filter === 'Scored' && s.score === 'Pending') return false;
+    if (searchQuery && s.participantName && !s.participantName.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
@@ -334,22 +336,34 @@ const FasilitatorReview = () => {
     <div className="page-container" style={{ padding: '2rem 1rem', backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 5rem)' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
               <FaUserShield /> Dashboard Fasilitator
             </h1>
             <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Review penugasan manual dan lihat seluruh jawaban peserta.</p>
           </div>
-          <select 
-            value={filter} 
-            onChange={(e) => setFilter(e.target.value)}
-            style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: 'white', fontWeight: 600, color: '#334155' }}
-          >
-            <option value="All">Semua Data</option>
-            <option value="Pending">Menunggu Review (Pending)</option>
-            <option value="Scored">Sudah Dinilai</option>
-          </select>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative' }}>
+              <FaSearch style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <input
+                type="text"
+                placeholder="Cari nama peserta..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ padding: '0.8rem 1rem 0.8rem 2.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', width: '250px', fontSize: '0.95rem' }}
+              />
+            </div>
+            <select 
+              value={filter} 
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: 'white', fontWeight: 600, color: '#334155' }}
+            >
+              <option value="All">Semua Data</option>
+              <option value="Pending">Menunggu Review (Pending)</option>
+              <option value="Scored">Sudah Dinilai</option>
+            </select>
+          </div>
         </div>
 
         <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
