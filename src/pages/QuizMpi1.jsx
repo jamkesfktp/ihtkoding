@@ -70,6 +70,32 @@ const QuizMpi1 = () => {
   const [submissionId, setSubmissionId] = useState(null);
   const [editCount, setEditCount] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [leftWidth, setLeftWidth] = useState(45);
+  const isResizing = React.useRef(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing.current) return;
+      const newWidth = (e.clientX / window.innerWidth) * 100;
+      if (newWidth >= 20 && newWidth <= 80) {
+        setLeftWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isResizing.current) {
+        isResizing.current = false;
+        document.body.style.cursor = 'default';
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -295,7 +321,7 @@ const QuizMpi1 = () => {
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 5rem)' }}>
       {/* Left Panel - PDF Viewer */}
-      <div style={{ flex: 'none', width: '45%', minWidth: '30%', maxWidth: '70%', resize: 'horizontal', overflow: 'auto', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--color-border)', backgroundColor: '#f1f5f9' }}>
+      <div style={{ width: `${leftWidth}%`, flex: 'none', overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--color-border)', backgroundColor: '#f1f5f9' }}>
         <div style={{ padding: '1rem', backgroundColor: 'white', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FaFilePdf style={{ color: '#ef4444', fontSize: '1.2rem' }} />
           <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Referensi Soal - {currentCase.title}</h2>
@@ -311,6 +337,30 @@ const QuizMpi1 = () => {
             <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>PDF Tidak Tersedia</div>
           )}
         </div>
+      </div>
+
+      {/* Resizer Divider */}
+      <div 
+        onMouseDown={(e) => {
+          e.preventDefault();
+          isResizing.current = true;
+          document.body.style.cursor = 'col-resize';
+        }}
+        style={{
+          width: '12px',
+          cursor: 'col-resize',
+          backgroundColor: '#f1f5f9',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 10,
+          transition: 'background-color 0.2s',
+          borderRight: '1px solid var(--color-border)'
+        }}
+        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+      >
+        <div style={{ width: '4px', height: '40px', backgroundColor: '#cbd5e1', borderRadius: '2px' }} />
       </div>
 
       {/* Right Panel - Evaluasi Form */}

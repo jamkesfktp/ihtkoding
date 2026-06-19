@@ -17,6 +17,32 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
   const [submissionId, setSubmissionId] = useState(null);
   const [editCount, setEditCount] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [leftWidth, setLeftWidth] = useState(60);
+  const isResizing = React.useRef(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing.current) return;
+      const newWidth = (e.clientX / window.innerWidth) * 100;
+      if (newWidth >= 20 && newWidth <= 80) {
+        setLeftWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isResizing.current) {
+        isResizing.current = false;
+        document.body.style.cursor = 'default';
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -221,21 +247,44 @@ const QuizCaseStudy = ({ quizData = quizDataMpi2 }) => {
         </pre>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: '90vh' }}>
+      <div style={{ display: 'flex', flex: 1, minHeight: '90vh' }}>
         {/* Left Side: PDF Viewer */}
         {currentCase.pdfUrl && (
-          <div style={{ flex: 'none', width: '60%', minWidth: '30%', maxWidth: '80%', resize: 'horizontal', overflow: 'auto', paddingRight: '10px' }}>
-            <div className="card" style={{ height: '100%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ padding: '1rem', backgroundColor: '#e2e8f0', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FaFilePdf style={{ color: '#ef4444' }}/>
-                <strong style={{ color: '#334155' }}>Referensi Rekam Medis - {currentCase.title}</strong>
-              </div>
-              <iframe 
-                src={`${currentCase.pdfUrl}#view=FitH&toolbar=0`} 
-                style={{ width: '100%', height: '100%', minHeight: '800px', border: 'none', flex: 1 }} 
-                title="PDF Viewer"
-              />
+          <div className="card" style={{ width: `${leftWidth}%`, flex: 'none', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '1rem', backgroundColor: '#e2e8f0', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FaFilePdf style={{ color: '#ef4444' }}/>
+              <strong style={{ color: '#334155' }}>Referensi Rekam Medis - {currentCase.title}</strong>
             </div>
+            <iframe 
+              src={`${currentCase.pdfUrl}#view=FitH&toolbar=0`} 
+              style={{ width: '100%', height: '100%', minHeight: '800px', border: 'none', flex: 1 }} 
+              title="PDF Viewer"
+            />
+          </div>
+        )}
+
+        {/* Resizer Divider */}
+        {currentCase.pdfUrl && (
+          <div 
+            onMouseDown={(e) => {
+              e.preventDefault();
+              isResizing.current = true;
+              document.body.style.cursor = 'col-resize';
+            }}
+            style={{
+              width: '16px',
+              cursor: 'col-resize',
+              backgroundColor: 'transparent',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <div style={{ width: '4px', height: '40px', backgroundColor: '#94a3b8', borderRadius: '2px' }} />
           </div>
         )}
 
