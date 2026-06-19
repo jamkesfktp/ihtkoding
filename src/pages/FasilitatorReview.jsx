@@ -66,15 +66,15 @@ const FasilitatorReview = () => {
       const q = c.questions.find(q => q.id === key);
       if (q) {
         let displayStr = '';
-        let isCorrect = false;
+        let scoreFraction = 0;
         const uAns = (userAnswer || '').toString().toUpperCase();
 
         if (quizTitle.includes("MPI 4") && c.keywords) {
           displayStr = c.keywords.join(' ATAU ');
-          isCorrect = c.keywords.some(kw => uAns.includes(kw.toUpperCase()));
+          scoreFraction = c.keywords.some(kw => uAns.includes(kw.toUpperCase())) ? 1 : 0;
         } else if (quizTitle.includes("Pre-Test") || quizTitle.includes("Post-Test")) {
           displayStr = q.answer;
-          isCorrect = (userAnswer === q.answer);
+          scoreFraction = (userAnswer === q.answer) ? 1 : 0;
         } else {
           // MPI 2 & 3
           displayStr = Array.isArray(q.answer) ? q.answer.join(' ATAU ') : (q.answer || '-');
@@ -82,25 +82,27 @@ const FasilitatorReview = () => {
           const checkAns = (expectedAnsStr) => {
             if (expectedAnsStr === "-") {
               const cleanUserAns = uAns.replace(/[^A-Z0-9-]/g, '');
-              if (cleanUserAns === "" || cleanUserAns === "-" || uAns.includes("TIDAK ADA") || uAns.includes("KOSONG") || uAns.includes("TIDAK")) return true;
-              return false;
+              if (cleanUserAns === "" || cleanUserAns === "-" || uAns.includes("TIDAK ADA") || uAns.includes("KOSONG") || uAns.includes("TIDAK")) return 1;
+              return 0;
             }
             const requiredCodes = expectedAnsStr.split(';').map(x => x.trim().toUpperCase());
-            return requiredCodes.every(code => {
+            let matches = 0;
+            requiredCodes.forEach(code => {
               const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               const regex = new RegExp(escapedCode + '(?!\\.|\\d)', 'i');
-              return regex.test(uAns);
+              if (regex.test(uAns)) matches++;
             });
+            return matches / requiredCodes.length;
           };
 
           if (Array.isArray(q.answer)) {
-            isCorrect = q.answer.some(ans => checkAns(ans.toString()));
+            scoreFraction = Math.max(...q.answer.map(ans => checkAns(ans.toString())));
           } else {
-            isCorrect = checkAns((q.answer || '').toString());
+            scoreFraction = checkAns((q.answer || '').toString());
           }
         }
 
-        return { displayStr, isCorrect };
+        return { displayStr, scoreFraction };
       }
     }
     return null;
@@ -271,13 +273,17 @@ const FasilitatorReview = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong>Soal / Item {key}:</strong>
                   {answerDetails && (
-                    answerDetails.isCorrect ? (
+                    answerDetails.scoreFraction === 1 ? (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#166534', backgroundColor: '#dcfce7', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                        <FaCheck /> BENAR
+                        <FaCheck /> BENAR (Skor: 1)
+                      </span>
+                    ) : answerDetails.scoreFraction > 0 ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#b45309', backgroundColor: '#fef3c7', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        <FaCheck /> BENAR SEBAGIAN (Skor: {answerDetails.scoreFraction.toFixed(2)})
                       </span>
                     ) : (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#991b1b', backgroundColor: '#fee2e2', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                        <FaTimes /> SALAH
+                        <FaTimes /> SALAH (Skor: 0)
                       </span>
                     )
                   )}
