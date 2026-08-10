@@ -109,6 +109,7 @@ const Register = () => {
                 placeholder="Pilih atau ketik instansi"
               />
               <datalist id="instansi-list">
+                <option value="Peserta IDI Tangsel" />
               </datalist>
             </div>
             <div>
