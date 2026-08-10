@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaFilePdf, FaArrowLeft, FaArrowRight, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaFilePdf, FaArrowLeft, FaArrowRight, FaCheckCircle, FaPlus, FaTrash, FaDesktop } from 'react-icons/fa';
 import { collection, addDoc, getDocs, query, where, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { answerKeyMpi1 } from '../data/answerKeyMpi1';
+import SlidePresentationModal from '../components/SlidePresentationModal';
 
 const cases = [
   { id: 1, title: "Kasus RM 1", pdfUrl: "/pdfs/mpi1-soal-1.pdf" },
@@ -72,6 +73,7 @@ const QuizMpi1 = () => {
   const [editCount, setEditCount] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [leftWidth, setLeftWidth] = useState(45);
+  const [isSlideOpen, setIsSlideOpen] = useState(false);
   const isResizing = React.useRef(false);
 
   useEffect(() => {
@@ -279,18 +281,33 @@ const QuizMpi1 = () => {
 
   if (isFinished) {
     return (
-      <div className="page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 5rem)' }}>
-        <div className="card" style={{ maxWidth: '600px', textAlign: 'center', padding: '3rem 2rem' }}>
+      <div className="page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 5rem)', padding: '2rem 1rem' }}>
+        <div className="card" style={{ maxWidth: '650px', textAlign: 'center', padding: '3rem 2rem' }}>
           <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
           <h2 style={{ color: '#0f172a', marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : 'Tugas Selesai!'}</h2>
-          <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+          <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: 1.6 }}>
             {editCount >= 1 
               ? 'Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.' 
-              : 'Jawaban Analisis Rekam Medis MPI 1 Anda telah dikirim dan menunggu review Fasilitator.'}
+              : 'Jawaban Analisis Rekam Medis MPI 1 Anda telah dikirim dan disimpan.'}
           </p>
-          <button className="btn btn-primary" onClick={() => navigate('/penugasan')}>
-            Kembali ke Workspace Penugasan
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+            <button className="btn btn-primary" onClick={() => setIsSlideOpen(true)} style={{ backgroundColor: '#0f172a', borderColor: '#0f172a', width: '100%', padding: '0.8rem 1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '1rem' }}>
+              <FaDesktop /> Tampilkan Slide Presentasi & Download PPTX
+            </button>
+            <button className="btn btn-outline" onClick={() => navigate('/penugasan')} style={{ width: '100%', padding: '0.8rem' }}>
+              Kembali ke Workspace Penugasan
+            </button>
+          </div>
+
+          <SlidePresentationModal 
+            isOpen={isSlideOpen} 
+            onClose={() => setIsSlideOpen(false)} 
+            answers={answers} 
+            userData={userData} 
+            cases={cases} 
+            kuantitatifParams={kuantitatifParams} 
+            kualitatifParams={kualitatifParams} 
+          />
         </div>
       </div>
     );
@@ -394,9 +411,19 @@ const QuizMpi1 = () => {
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', backgroundColor: '#fafafa', position: 'relative' }}>
         <div style={{ padding: '2rem', minWidth: '600px', maxWidth: '800px', margin: '0 auto' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', backgroundColor: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h2 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.5rem' }}>Analisis Resume Medis ({currentCase.title})</h2>
-            <div style={{ color: '#64748b', fontWeight: 600 }}>Kasus {currentCaseIndex + 1} / {cases.length}</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h2 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.4rem' }}>Analisis Resume Medis ({currentCase.title})</h2>
+              <div style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.2rem' }}>Kasus {currentCaseIndex + 1} dari {cases.length}</div>
+            </div>
+            
+            <button 
+              onClick={() => setIsSlideOpen(true)}
+              className="btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#0f172a', color: 'white', borderColor: '#0f172a', padding: '0.6rem 1rem', fontSize: '0.9rem' }}
+            >
+              <FaDesktop /> Slide Presentasi (Preview & PPTX)
+            </button>
           </div>
 
           <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
@@ -480,10 +507,18 @@ const QuizMpi1 = () => {
               </button>
             )}
           </div>
-
         </div>
       </div>
 
+      <SlidePresentationModal 
+        isOpen={isSlideOpen} 
+        onClose={() => setIsSlideOpen(false)} 
+        answers={answers} 
+        userData={userData} 
+        cases={cases} 
+        kuantitatifParams={kuantitatifParams} 
+        kualitatifParams={kualitatifParams} 
+      />
     </div>
   );
 };
