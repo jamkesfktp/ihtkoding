@@ -4,60 +4,66 @@ import { FaCalendarCheck, FaClock, FaUserTie } from 'react-icons/fa';
 const scheduleData = [
   {
     day: "Hari 1",
-    date: "17 Juni 2026",
+    date: "Selasa, 12 Agustus 2026",
     events: [
-      { time: "07:30 - 08:00", title: "Pre Test", speaker: "Plataran Sehat" },
-      { time: "08:00 - 08:45", title: "Pembukaan", speaker: "-" },
-      { time: "08:45 - 09:00", title: "Break", speaker: "-" },
-      { time: "09:00 - 10:30", title: "MP 1 : Building Learning Commitment (BLC)", speaker: "Diklat Sardjito" },
-      { time: "10:30 - 12:00", title: "MD 1 : Kebijakan Program JKN", speaker: "DR. Ahmad Irsan A Moeis.,S.E., M.E" },
-      { time: "12:00 - 13:00", title: "ISHOMA", speaker: "-" },
-      { time: "13:00 - 14:30", title: "MD 2 : Kebijakan Rekam Medis Elektronik dan Kode Etik Perekam Medis dan Informasi Kesehatan", speaker: "Fasilitator RS" },
-      { time: "14:30 - 16:00", title: "MD 3 : Pola Pembayaran FPKTL dengan Menggunakan Indonesia Diagnosis Related Group (iDRG)", speaker: "dr. Emmy Ridhawaty Mangunsong, MARS" },
-      { time: "16:00 - 17:30", title: "MD 4 : Verifikasi Klaim JKN", speaker: "dr. Maria Hotnida, MARS., CHIA" }
+      { time: "07:00 - 07:30", title: "Registrasi Peserta", speaker: "Panitia" },
+      { time: "07:30 - 08:00", title: "Pre Test", speaker: "MOT" },
+      { time: "08:00 - 08:30", title: "Pembukaan", speaker: "Panitia" },
+      { time: "08:30 - 10:00", title: "MPD Kebijakan JKN", speaker: "dr. Emmy Ridhawaty / dr. Yusuf Subekti / dr. Karlina" },
+      { time: "10:00 - 10:15", title: "Coffe Break", speaker: "MOT" },
+      { time: "10:15 - 11:45", title: "MPD Kode Etik PMIK & Rekam Medis Elektronik", speaker: "Yati Maryati.,SKM.,MKM" },
+      { time: "11:45 - 12:45", title: "Ishoma", speaker: "MOT" },
+      { time: "12:45 - 14:15", title: "MPD Sistem Pembiayaan iDRG", speaker: "Dr. Ahmad Irsan A. Moeis, S.E., M.E." },
+      { time: "14:15 - 15:45", title: "MPD Verifikasi Klaim", speaker: "dr. Erwinsyah - BPJS Kesehatan" },
+      { time: "15:45 - 16:15", title: "Coffe Break & Sholat Asar", speaker: "MOT" },
+      { time: "16:15 - 17:45", title: "MPD Fraud dalam JKN", speaker: "Heru Susanto, SE, SH, QHIA - Inspektur I Inspektorat Jenderal Kemenkes" }
     ]
   },
   {
     day: "Hari 2",
-    date: "18 Juni 2026",
+    date: "Rabu, 13 Agustus 2026",
     events: [
-      { time: "07:30 - 08:00", title: "Refleksi", speaker: "Pengendali Pelatihan" },
-      { time: "08:00 - 08:45", title: "MI 1 : Analisis Kelengkapan Rekam Medis sebagai dasar Klaim JKN", speaker: "Yosi Prasetyo" },
-      { time: "08:45 - 10:15", title: "MI 2 : Kodifikasi Penyakit dan Masalah Kesehatan", speaker: "Riki Permana Putra" },
-      { time: "10:15 - 10:30", title: "Break", speaker: "-" },
-      { time: "10:30 - 12:00", title: "MI 2 : Kodifikasi Penyakit dan Masalah Kesehatan", speaker: "Yosi Prasetyo" },
-      { time: "12:00 - 13:00", title: "ISHOMA", speaker: "-" },
-      { time: "13:00 - 14:30", title: "MI 3 : Kodifikasi Tindakan/Prosedur dan Masalah Kesehatan", speaker: "Yosi Prasetyo" },
-      { time: "14:30 - 15:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable pada Aplikasi E-Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Ardian Budi Permana" },
-      { time: "15:15 - 16:00", title: "MI 5 : Analisis Data Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Shabrina" },
-      { time: "16:00 - 17:30", title: "MP 2 : Anti Korupsi (Fraud dalam JKN)", speaker: "SPI SARDJITO" }
+      { time: "07:30 - 07:45", title: "Refleksi Hari Sebelumnya", speaker: "MOT" },
+      { time: "07:45 - 09:15", title: "BLC", speaker: "MOT" },
+      { time: "09:15 - 10:00", title: "MPI 1 Analisis Rekam Medis", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "10:00 - 10:15", title: "Coffe Break", speaker: "MOT" },
+      { time: "10:15 - 11:45", title: "MPI 1 Praktik Analisis Rekam Medis", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "11:45 - 12:45", title: "Ishoma", speaker: "MOT" },
+      { time: "12:45 - 14:15", title: "MPI 2 Aturan Dasar ICD 10", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "14:15 - 15:45", title: "MPI 2 Aturan Koding iDRG", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "15:45 - 16:15", title: "Coffe Break & Sholat Asar", speaker: "MOT" },
+      { time: "16:15 - 17:45", title: "MPI 2 Praktik Kodefikasi Diagnosis Penyakit", speaker: "Tim Pusat Pembiayaan Kesehatan" }
     ]
   },
   {
     day: "Hari 3",
-    date: "19 Juni 2026",
+    date: "Kamis, 14 Agustus 2026",
     events: [
-      { time: "07:30 - 08:00", title: "Refleksi", speaker: "Pengendali Pelatihan" },
-      { time: "08:00 - 09:30", title: "MI 1 : Analisis Kelengkapan Rekam Medis sebagai dasar Klaim JKN", speaker: "Yosi Prasetyo" },
-      { time: "09:30 - 09:45", title: "Break", speaker: "-" },
-      { time: "09:45 - 11:15", title: "MI 2 : Kodifikasi Penyakit dan Masalah Kesehatan", speaker: "Yosi Prasetyo" },
-      { time: "11:15 - 12:30", title: "ISHOMA", speaker: "-" },
-      { time: "12:30 - 15:30", title: "MI 2 : Kodifikasi Penyakit dan Masalah Kesehatan", speaker: "Riki Permana Putra" },
-      { time: "15:30 - 17:00", title: "MI 3 : Kodifikasi Tindakan/Prosedur dan Masalah Kesehatan", speaker: "Riki Permana Putra" }
+      { time: "07:30 - 07:45", title: "Refleksi Hari Sebelumnya", speaker: "MOT" },
+      { time: "07:45 - 10:45", title: "MPI 2 Praktik Kodefikasi Diagnosis Penyakit (Lanjutan)", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "10:45 - 11:00", title: "Coffe Break", speaker: "MOT" },
+      { time: "11:00 - 12:30", title: "MPI 3 Aturan Koding ICD 9CM", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "12:30 - 13:30", title: "Ishoma", speaker: "MOT" },
+      { time: "13:30 - 16:30", title: "MPI 3 Praktek Koding ICD 9 CM", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "16:30 - 16:45", title: "Coffe Break & Sholat Asar", speaker: "MOT" },
+      { time: "16:45 - 17:30", title: "MPI 4 Trouble Shooting Instalasi iDRG", speaker: "Tim Pusat Pembiayaan Kesehatan" }
     ]
   },
   {
     day: "Hari 4",
-    date: "20 Juni 2026",
+    date: "Jumat, 15 Agustus 2026",
     events: [
-      { time: "07:30 - 08:00", title: "Refleksi", speaker: "-" },
-      { time: "08:00 - 09:30", title: "MI 3 : Kodifikasi Tindakan/Prosedur dan Masalah Kesehatan", speaker: "Riki Permana Putra" },
-      { time: "09:30 - 09:45", title: "Break", speaker: "-" },
-      { time: "09:45 - 11:15", title: "MI 4 : Optimalisasi Input Data dan Penyelesaian Masalah Ungroupable pada Aplikasi E-Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Ardian Budi Permana" },
-      { time: "11:15 - 12:30", title: "ISHOMA", speaker: "-" },
-      { time: "12:30 - 14:45", title: "MI 5 : Analisis Data Klaim dalam Indonesia Diagnosis Related Group (iDRG)", speaker: "Riki Permana Putra" },
-      { time: "14:45 - 16:15", title: "MP 3 : Rencana Tindak Lanjut (RTL)", speaker: "Riki + Adit + Yosi" },
-      { time: "16:15 - 17:00", title: "Penutupan", speaker: "-" }
+      { time: "07:30 - 07:45", title: "Refleksi Hari Sebelumnya", speaker: "MOT" },
+      { time: "07:45 - 09:15", title: "MPI 4 Praktek Ungroupable iDRG", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "09:15 - 10:00", title: "MPI 5 Analisis Data Klaim", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "10:00 - 10:15", title: "Coffe Break", speaker: "MOT" },
+      { time: "10:15 - 11:30", title: "MPI 5 Praktek Analisis Data Klaim Looker Studio", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "11:30 - 13:00", title: "Ishoma", speaker: "MOT" },
+      { time: "13:00 - 14:00", title: "MPI 5 Praktek Analisis Data Klaim Looker Studio (lanjut)", speaker: "Tim Pusat Pembiayaan Kesehatan" },
+      { time: "14:00 - 15:30", title: "RTL (Rencana Tindak Lanjut)", speaker: "MOT" },
+      { time: "15:30 - 16:15", title: "Post Test", speaker: "MOT" },
+      { time: "16:15 - 18:00", title: "Penutupan Acara", speaker: "Panitia" },
+      { time: "18.00 - 19.00", title: "Penyelesaian Administrasi Peserta", speaker: "Panitia" }
     ]
   }
 ];
@@ -68,7 +74,7 @@ const Jadwal = () => {
       <div className="page-header">
         <div className="container">
           <h1 className="title">Jadwal Pelatihan</h1>
-          <p className="subtitle">Rangkaian kegiatan Workshop Pelatihan Koding RSUP Dr. Sardjito</p>
+          <p className="subtitle">Rangkaian kegiatan Pelatihan Bagi Tenaga Koder di FPKTL (12–15 Agustus 2026)</p>
         </div>
       </div>
 

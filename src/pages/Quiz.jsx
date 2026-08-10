@@ -143,32 +143,80 @@ const Quiz = () => {
   if (isFinished) {
     const result = calculateScore();
     return (
-      <div className="page-container" style={{ padding: '4rem 1.5rem', backgroundColor: '#f8fafc' }}>
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-          <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : 'Hasil Ujian Koding'}</h2>
+      <div className="page-container" style={{ padding: '3rem 1.5rem', backgroundColor: '#f8fafc' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
-          {!submissionId || editCount >= 1 ? (
-            <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-              Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.
-            </p>
-          ) : null}
+          <div className="card" style={{ textAlign: 'center', padding: '2.5rem' }}>
+            <FaCheckCircle style={{ fontSize: '4rem', color: '#10b981', margin: '0 auto 1.5rem' }} />
+            <h2 style={{ marginBottom: '1rem' }}>{editCount >= 1 ? 'Jawaban Terkunci!' : 'Hasil Ujian Koding'}</h2>
+            
+            {!submissionId || editCount >= 1 ? (
+              <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+                Anda telah menggunakan batas pengubahan 1x. Jawaban Anda telah dikunci dan tidak bisa diubah lagi.
+              </p>
+            ) : null}
 
-          <div style={{ fontSize: '4rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '1rem' }}>
-            {result.score}
+            <div style={{ fontSize: '4rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '1rem' }}>
+              {result.score}
+            </div>
+            <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
+              Anda menjawab benar <strong>{result.correct}</strong> dari <strong>{result.total}</strong> soal.
+            </p>
+            <button className="btn btn-primary" onClick={() => navigate('/soal')}>
+              Kembali ke Halaman Soal
+            </button>
           </div>
-          <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-            Anda menjawab benar <strong>{result.correct}</strong> dari <strong>{result.total}</strong> soal.
-          </p>
-          <button className="btn btn-primary" onClick={() => navigate('/soal')}>
-            Kembali ke Halaman Soal
-          </button>
+
+          {/* Modul Review Pembahasan Lengkap */}
+          <div className="card" style={{ padding: '2rem' }}>
+            <h3 style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.5rem', color: '#1e293b' }}>
+              Review & Pembahasan Soal
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {quizQuestions.map((q, idx) => {
+                const userAnswer = answers[idx];
+                const isCorrect = userAnswer === q.answer;
+                return (
+                  <div key={idx} style={{ padding: '1.25rem', borderRadius: '8px', border: `1px solid ${isCorrect ? '#bbf7d0' : '#fecaca'}`, backgroundColor: isCorrect ? '#f0fdf4' : '#fef2f2' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                      <strong style={{ color: '#334155', fontSize: '1rem' }}>Soal No. {idx + 1}</strong>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 'bold', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem', backgroundColor: isCorrect ? '#dcfce7' : '#fee2e2', color: isCorrect ? '#166534' : '#991b1b' }}>
+                        {isCorrect ? <><FaCheckCircle /> Benar</> : <><FaTimesCircle /> Salah</>}
+                      </span>
+                    </div>
+                    <p style={{ fontWeight: 500, color: '#1e293b', marginBottom: '1rem' }}>{q.question}</p>
+
+                    <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1rem' }}>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Jawaban Anda: </span>
+                        <strong style={{ color: isCorrect ? '#166534' : '#dc2626' }}>{userAnswer || 'Belum Dijawab'}</strong>
+                      </div>
+                      {!isCorrect && (
+                        <div>
+                          <span style={{ color: '#64748b' }}>Kunci Jawaban Benar: </span>
+                          <strong style={{ color: '#166534' }}>{q.answer}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    {q.explanation && (
+                      <div style={{ backgroundColor: 'white', padding: '0.8rem 1rem', borderRadius: '6px', borderLeft: '4px solid #3b82f6', fontSize: '0.9rem', color: '#1e293b' }}>
+                        <strong>Pembahasan:</strong> {q.explanation}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
         </div>
       </div>
     );
   }
 
   const currentQ = quizQuestions[currentQuestion];
+  const isEditingMode = Boolean(submissionId && editCount === 0);
 
   return (
     <div className="page-container" style={{ padding: '2rem 1.5rem', backgroundColor: '#f1f5f9', minHeight: 'calc(100vh - 5rem)' }}>
@@ -177,10 +225,33 @@ const Quiz = () => {
         {/* Sidebar Navigasi Soal */}
         <div className="card" style={{ width: '280px', flexShrink: 0, padding: '1.5rem' }}>
           <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Navigasi Soal</h3>
+          
+          {isEditingMode && (
+            <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', color: '#b45309', padding: '0.6rem 0.8rem', borderRadius: '6px', fontSize: '0.8rem', marginBottom: '1rem', fontWeight: 500 }}>
+              <FaTimesCircle style={{ color: '#ef4444', marginRight: '0.3rem' }} /> Nomor berlatar merah/tanda (❌) adalah jawaban yang masih salah. Silakan perbaiki!
+            </div>
+          )}
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-            {quizQuestions.map((_, idx) => {
+            {quizQuestions.map((q, idx) => {
               const isAnswered = answers[idx] !== undefined;
               const isCurrent = currentQuestion === idx;
+              const isWrongInPrevious = isEditingMode && isAnswered && answers[idx] !== q.answer;
+              
+              let bgColor = '#e2e8f0';
+              let textColor = '#475569';
+
+              if (isCurrent) {
+                bgColor = 'var(--color-primary)';
+                textColor = 'white';
+              } else if (isWrongInPrevious) {
+                bgColor = '#fee2e2';
+                textColor = '#ef4444';
+              } else if (isAnswered) {
+                bgColor = '#10b981';
+                textColor = 'white';
+              }
+
               return (
                 <button
                   key={idx}
@@ -188,20 +259,29 @@ const Quiz = () => {
                   style={{
                     padding: '0.75rem',
                     borderRadius: '0.5rem',
-                    border: 'none',
+                    border: isWrongInPrevious ? '2px solid #ef4444' : 'none',
                     cursor: 'pointer',
                     fontWeight: 'bold',
-                    backgroundColor: isCurrent ? 'var(--color-primary)' : isAnswered ? '#10b981' : '#e2e8f0',
-                    color: (isCurrent || isAnswered) ? 'white' : '#475569',
-                    transition: 'all 0.2s'
+                    backgroundColor: bgColor,
+                    color: textColor,
+                    transition: 'all 0.2s',
+                    position: 'relative'
                   }}
                 >
                   {idx + 1}
+                  {isWrongInPrevious && (
+                    <span style={{ position: 'absolute', top: '-4px', right: '-4px', backgroundColor: '#ef4444', color: 'white', borderRadius: '50%', width: '14px', height: '14px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</span>
+                  )}
                 </button>
               );
             })}
           </div>
           <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: '#64748b' }}>
+            {isEditingMode && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '16px', height: '16px', backgroundColor: '#fee2e2', border: '1px solid #ef4444', borderRadius: '4px' }}></div> Perlu Diperbaiki (Salah)
+              </div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: '4px' }}></div> Sudah Dijawab
             </div>
@@ -214,7 +294,14 @@ const Quiz = () => {
         {/* Area Soal */}
         <div className="card" style={{ flex: 1, padding: '2.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--color-secondary)' }}>Soal No. {currentQuestion + 1}</h2>
+            <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--color-secondary)' }}>
+              Soal No. {currentQuestion + 1}
+              {isEditingMode && answers[currentQuestion] !== undefined && answers[currentQuestion] !== currentQ.answer && (
+                <span style={{ marginLeft: '1rem', fontSize: '0.85rem', color: '#ef4444', backgroundColor: '#fee2e2', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>
+                  <FaTimesCircle style={{ marginRight: '0.3rem' }} /> Jawaban sebelumnya kurang tepat, coba pilihan lain!
+                </span>
+              )}
+            </h2>
           </div>
 
           <p style={{ fontSize: '1.1rem', marginBottom: '2rem', lineHeight: 1.6, fontWeight: 500 }}>

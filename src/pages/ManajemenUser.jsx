@@ -45,6 +45,26 @@ const ManajemenUser = () => {
     }
   };
 
+  const toggleActiveStatus = async (userId, currentInactiveStatus) => {
+    const isDeactivating = !currentInactiveStatus;
+    const confirmText = isDeactivating
+      ? "Apakah Anda yakin ingin MENONAKTIFKAN user ini? Data isiannya tidak akan tampil lagi di Leaderboard dan Rekap."
+      : "Apakah Anda yakin ingin MENGAKTIFKAN kembali user ini?";
+    
+    if (!window.confirm(confirmText)) return;
+
+    try {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
+        isInactive: isDeactivating
+      });
+      setUsers(users.map(u => u.id === userId ? { ...u, isInactive: isDeactivating } : u));
+    } catch (err) {
+      console.error("Error updating active status:", err);
+      alert("Gagal mengubah status keaktifan.");
+    }
+  };
+
   const changeRole = async (userId, newRole) => {
     try {
       const userRef = doc(db, 'users', userId);
@@ -86,7 +106,7 @@ const ManajemenUser = () => {
             <h1 style={{ color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
               <FaUsers /> Manajemen User
             </h1>
-            <p style={{ color: '#64748b', margin: '0.5rem 0 0 0' }}>Kelola persetujuan pendaftaran dan hak akses peran pengguna.</p>
+            <p style={{ color: '#64748b', margin: '0.5rem 0 0 0' }}>Kelola persetujuan pendaftaran, hak akses, dan status keaktifan pengguna.</p>
           </div>
           <button onClick={fetchUsers} disabled={loading} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <FaSync className={loading ? "spin" : ""} /> {loading ? "Memuat..." : "Muat Ulang Data"}
@@ -107,19 +127,23 @@ const ManajemenUser = () => {
                 <th style={{ padding: '1rem', color: '#334155' }}>Username</th>
                 <th style={{ padding: '1rem', color: '#334155' }}>Instansi / Kelompok</th>
                 <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Role</th>
-                <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Status Approval</th>
-                <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Aksi Role</th>
+                <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Approval</th>
+                <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Status Active</th>
+                <th style={{ padding: '1rem', color: '#334155', textAlign: 'center' }}>Aksi Role & Hapus</th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Belum ada data pengguna.</td>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Belum ada data pengguna.</td>
                 </tr>
               ) : (
                 users.map(user => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid #e2e8f0', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                    <td style={{ padding: '1rem', fontWeight: 600, color: '#0f172a' }}>{user.namaLengkap}</td>
+                  <tr key={user.id} style={{ borderBottom: '1px solid #e2e8f0', opacity: user.isInactive ? 0.6 : 1, transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                    <td style={{ padding: '1rem', fontWeight: 600, color: '#0f172a' }}>
+                      {user.namaLengkap}
+                      {user.isInactive && <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', backgroundColor: '#94a3b8', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>Nonaktif</span>}
+                    </td>
                     <td style={{ padding: '1rem', color: '#475569' }}>@{user.username}</td>
                     <td style={{ padding: '1rem', color: '#475569' }}>
                       <div style={{ fontSize: '0.9rem' }}>{user.instansi || '-'}</div>
@@ -157,6 +181,24 @@ const ManajemenUser = () => {
                         }}
                       >
                         {user.isApproved ? <><FaCheckCircle /> Disetujui</> : <><FaTimesCircle /> Tunda</>}
+                      </button>
+                    </td>
+
+                    <td style={{ padding: '1rem', textAlign: 'center' }}>
+                      <button 
+                        onClick={() => toggleActiveStatus(user.id, user.isInactive)}
+                        style={{
+                          backgroundColor: user.isInactive ? '#fee2e2' : '#dcfce7',
+                          color: user.isInactive ? '#ef4444' : '#10b981',
+                          border: `1px solid ${user.isInactive ? '#fca5a5' : '#86efac'}`,
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          fontSize: '0.85rem'
+                        }}
+                      >
+                        {user.isInactive ? 'Nonaktif' : 'Aktif'}
                       </button>
                     </td>
 

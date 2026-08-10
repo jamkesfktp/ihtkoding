@@ -109,7 +109,6 @@ const Register = () => {
                 placeholder="Pilih atau ketik instansi"
               />
               <datalist id="instansi-list">
-                <option value="RSUP Sardjito" />
               </datalist>
             </div>
             <div>

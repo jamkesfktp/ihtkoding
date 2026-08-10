@@ -1,13 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaUserCog, FaDownload, FaTable } from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [inactiveUserIds, setInactiveUserIds] = useState(new Set());
 
   useEffect(() => {
+    const fetchInactiveUsers = async () => {
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const inactiveSet = new Set();
+        snap.forEach(doc => {
+          const uData = doc.data();
+          if (uData.isInactive) {
+            inactiveSet.add(doc.id);
+            if (uData.namaLengkap) inactiveSet.add(uData.namaLengkap.toLowerCase().trim());
+          }
+        });
+        setInactiveUserIds(inactiveSet);
+      } catch (err) {
+        console.error("Error fetching inactive users:", err);
+      }
+    };
+    fetchInactiveUsers();
+
     const q = query(collection(db, "scores"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -18,8 +37,14 @@ const AdminDashboard = () => {
     return () => unsubscribe();
   }, []);
 
+  const activeSubmissions = submissions.filter(s => {
+    if (s.userId && inactiveUserIds.has(s.userId)) return false;
+    if (s.participantName && inactiveUserIds.has(s.participantName.toLowerCase().trim())) return false;
+    return true;
+  });
+
   const downloadCSV = () => {
-    if (submissions.length === 0) {
+    if (activeSubmissions.length === 0) {
       alert("Tidak ada data untuk diunduh.");
       return;
     }
@@ -28,7 +53,7 @@ const AdminDashboard = () => {
     let csvContent = "Waktu Submit,Nama Peserta,Instansi,Kelompok,Penugasan,Skor\n";
 
     // Data Rows
-    submissions.forEach(sub => {
+    activeSubmissions.forEach(sub => {
       const waktu = sub.timestamp ? new Date(sub.timestamp.toDate()).toLocaleString('id-ID') : '-';
       const nama = `"${sub.participantName || '-'}"`;
       const instansi = `"${sub.instansi || '-'}"`;
@@ -91,10 +116,10 @@ const AdminDashboard = () => {
               <tbody>
                 {loading ? (
                   <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>Memuat data...</td></tr>
-                ) : submissions.length === 0 ? (
+                ) : activeSubmissions.length === 0 ? (
                   <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Belum ada data pengumpulan.</td></tr>
                 ) : (
-                  submissions.map(sub => (
+                  activeSubmissions.map(sub => (
                     <tr key={sub.id} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: 'white' }}>
                       <td style={{ padding: '1rem', fontSize: '0.9rem', color: '#64748b' }}>
                         {sub.timestamp ? new Date(sub.timestamp.toDate()).toLocaleString('id-ID') : '-'}

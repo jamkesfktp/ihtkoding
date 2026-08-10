@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaTrophy, FaMedal, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -8,8 +8,27 @@ const Leaderboard = () => {
   const { userData } = useAuth();
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [inactiveUserIds, setInactiveUserIds] = useState(new Set());
 
   useEffect(() => {
+    const fetchInactiveUsers = async () => {
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const inactiveSet = new Set();
+        snap.forEach(doc => {
+          const uData = doc.data();
+          if (uData.isInactive) {
+            inactiveSet.add(doc.id);
+            if (uData.namaLengkap) inactiveSet.add(uData.namaLengkap.toLowerCase().trim());
+          }
+        });
+        setInactiveUserIds(inactiveSet);
+      } catch (err) {
+        console.error("Error fetching inactive users:", err);
+      }
+    };
+    fetchInactiveUsers();
+
     const q = query(collection(db, "scores"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = [];
@@ -23,8 +42,15 @@ const Leaderboard = () => {
     return () => unsubscribe();
   }, []);
 
+  // Filter out inactive users
+  const activeScores = scores.filter(s => {
+    if (s.userId && inactiveUserIds.has(s.userId)) return false;
+    if (s.participantName && inactiveUserIds.has(s.participantName.toLowerCase().trim())) return false;
+    return true;
+  });
+
   // Aggregation per participant
-  const aggregatedScores = scores.reduce((acc, curr) => {
+  const aggregatedScores = activeScores.reduce((acc, curr) => {
     // Gunakan 'participantName' sebagai identifier (bisa juga nama + kelompok kalau mau strict)
     const name = curr.participantName || "Tanpa Nama";
     if (!acc[name]) {

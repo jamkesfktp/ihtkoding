@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaUserShield, FaCheck, FaTimes, FaSearch } from 'react-icons/fa';
 import { answerKeyMpi1 } from '../data/answerKeyMpi1';
@@ -19,18 +19,42 @@ const FasilitatorReview = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [inactiveUserIds, setInactiveUserIds] = useState(new Set());
 
   useEffect(() => {
+    const fetchInactiveUsers = async () => {
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const inactiveSet = new Set();
+        snap.forEach(doc => {
+          const uData = doc.data();
+          if (uData.isInactive) {
+            inactiveSet.add(doc.id);
+            if (uData.namaLengkap) inactiveSet.add(uData.namaLengkap.toLowerCase().trim());
+          }
+        });
+        setInactiveUserIds(inactiveSet);
+      } catch (err) {
+        console.error("Error fetching inactive users:", err);
+      }
+    };
+    fetchInactiveUsers();
+
     const q = query(collection(db, "scores"), orderBy("timestamp", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Tampilkan semua data ujian tanpa filter
       setSubmissions(data);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const activeSubmissions = submissions.filter(s => {
+    if (s.userId && inactiveUserIds.has(s.userId)) return false;
+    if (s.participantName && inactiveUserIds.has(s.participantName.toLowerCase().trim())) return false;
+    return true;
+  });
 
   const handleUpdateScore = async () => {
     if (!inputScore || isNaN(inputScore)) {
@@ -325,7 +349,7 @@ const FasilitatorReview = () => {
     return <pre>{JSON.stringify(answers, null, 2)}</pre>;
   };
 
-  const filteredSubmissions = submissions.filter(s => {
+  const filteredSubmissions = activeSubmissions.filter(s => {
     if (filter === 'Pending' && s.score !== 'Pending') return false;
     if (filter === 'Scored' && s.score === 'Pending') return false;
     if (searchQuery && s.participantName && !s.participantName.toLowerCase().includes(searchQuery.toLowerCase())) return false;
