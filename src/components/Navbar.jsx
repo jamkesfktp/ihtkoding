@@ -51,11 +51,14 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="navbar glass">
+    <header className="navbar kemenkes-navbar">
       <div className="container nav-container">
         <Link to="/" className="nav-logo">
-          <img src={logoKemenkes} alt="Logo Kemenkes" style={{ height: '40px', width: 'auto' }} />
-          <span className="logo-text">IHT Pelatihan Koding</span>
+          <img src={logoKemenkes} alt="Logo Kemenkes RI" style={{ height: '42px', width: 'auto' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span className="logo-text">LMS Pelatihan Koding FPKTL</span>
+            <span style={{ fontSize: '0.7rem', color: '#00a99d', letterSpacing: '0.05em', fontWeight: 600 }}>KEMENTERIAN KESEHATAN RI</span>
+          </div>
         </Link>
         
         <div className="menu-icon" onClick={toggleMenu}>
@@ -142,17 +145,25 @@ const Navbar = () => {
             {/* User Profile / Login Button */}
             {currentUser ? (
               <li className="nav-item user-profile-item">
-                <span className="user-profile-name">
-                  <FaUserCircle size={18} /> {userData ? userData.namaLengkap : 'Loading...'}
-                </span>
-                <button onClick={handleLogout} className="btn btn-outline btn-logout">
+                <div className="user-profile-chip">
+                  <div className="user-avatar-circle">
+                    <FaUserCircle size={22} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                    <span className="user-profile-name">{userData ? userData.namaLengkap : 'Loading...'}</span>
+                    <span className="user-role-badge">
+                      {userData?.role === 'admin' ? 'Admin Utama' : userData?.role === 'fasilitator' ? 'Fasilitator' : 'Peserta'}
+                    </span>
+                  </div>
+                </div>
+                <button onClick={handleLogout} className="btn btn-outline btn-logout" title="Keluar dari akun">
                   <FaSignOutAlt /> Keluar
                 </button>
               </li>
             ) : (
               <li className="nav-item login-item">
                 <Link to="/login" className="btn btn-primary" onClick={() => setIsOpen(false)}>
-                  Login / Daftar
+                  Login Portal LMS
                 </Link>
               </li>
             )}
