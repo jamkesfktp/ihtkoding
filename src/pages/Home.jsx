@@ -76,7 +76,7 @@ const Home = () => {
           </div>
 
           <h1 style={{ fontSize: '3rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '1rem', color: '#ffffff', fontFamily: 'Outfit, sans-serif' }}>
-            Portal Pelatihan Koding & Tarif iDRG di FPKTL
+            Portal Penguatan Tenaga Koder dalam Pengodean Klaim JKN di FPKTL
           </h1>
 
           <p style={{ fontSize: '1.2rem', color: '#cbd5e1', maxWidth: '750px', margin: '0 0 2.5rem', lineHeight: 1.6 }}>
