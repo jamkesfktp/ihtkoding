@@ -4,7 +4,7 @@ import { FaCalendarCheck, FaClock, FaUserTie } from 'react-icons/fa';
 const scheduleData = [
   {
     day: "Hari 1",
-    date: "Selasa, 12 Agustus 2026",
+    date: "Rabu, 12 Agustus 2026",
     events: [
       { time: "07:00 - 07:30", title: "Registrasi Peserta", speaker: "Panitia" },
       { time: "07:30 - 08:00", title: "Pre Test", speaker: "Pusat Pembiayaan Kesehatan" },
@@ -21,7 +21,7 @@ const scheduleData = [
   },
   {
     day: "Hari 2",
-    date: "Rabu, 13 Agustus 2026",
+    date: "Kamis, 13 Agustus 2026",
     events: [
       { time: "07:30 - 07:45", title: "Refleksi Hari Sebelumnya", speaker: "Pusat Pembiayaan Kesehatan" },
       { time: "07:45 - 08:30", title: "MPI 2 Aturan Dasar ICD 10", speaker: "Yosi Prasetyo" },
@@ -37,7 +37,7 @@ const scheduleData = [
   },
   {
     day: "Hari 3",
-    date: "Kamis, 14 Agustus 2026",
+    date: "Jumat, 14 Agustus 2026",
     events: [
       { time: "07:30 - 07:45", title: "Refleksi Hari Sebelumnya", speaker: "Pusat Pembiayaan Kesehatan" },
       { time: "07:45 - 09:15", title: "MPI 3 Praktek Koding ICD 9 CM", speaker: "Riki Permana Putra" },
@@ -53,7 +53,7 @@ const scheduleData = [
   },
   {
     day: "Hari 4",
-    date: "Jumat, 15 Agustus 2026",
+    date: "Sabtu, 15 Agustus 2026",
     events: [
       { time: "08:00 - 08:15", title: "Refleksi Hari Sebelumnya", speaker: "Pusat Pembiayaan Kesehatan" },
       { time: "08:15 - 09:00", title: "MPI 4 Praktek Ungroupable iDRG", speaker: "Ardian Permana" },
