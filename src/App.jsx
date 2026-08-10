@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import Home from './pages/Home';
 import Jadwal from './pages/Jadwal';
 import Materi from './pages/Materi';
@@ -30,65 +30,57 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="app-container">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/jadwal" element={<Jadwal />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/menunggu-persetujuan" element={<MenungguPersetujuan />} />
-              
-              {/* Protected Routes */}
-              <Route path="/materi" element={<ProtectedRoute><Materi /></ProtectedRoute>} />
-              <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-              <Route path="/penugasan" element={<ProtectedRoute><Penugasan /></ProtectedRoute>} />
-              <Route path="/rtl-form" element={<ProtectedRoute><RtlForm /></ProtectedRoute>} />
-              <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-              
-              <Route path="/quiz-mpi1" element={<ProtectedRoute><QuizMpi1 /></ProtectedRoute>} />
-              <Route path="/quiz-mpi2" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi2} /></ProtectedRoute>} />
-              <Route path="/quiz-mpi3" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi3} /></ProtectedRoute>} />
-              <Route path="/quiz-mpi4" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi4} /></ProtectedRoute>} />
-              <Route path="/quiz-pretest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPreTest} /></ProtectedRoute>} />
-              <Route path="/quiz-posttest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPostTest} /></ProtectedRoute>} />
-              <Route path="/penugasan-mpi5" element={<ProtectedRoute><PenugasanMpi5 /></ProtectedRoute>} />
+        <Layout>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/jadwal" element={<Jadwal />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/menunggu-persetujuan" element={<MenungguPersetujuan />} />
+            
+            {/* Protected Routes */}
+            <Route path="/materi" element={<ProtectedRoute><Materi /></ProtectedRoute>} />
+            <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+            <Route path="/penugasan" element={<ProtectedRoute><Penugasan /></ProtectedRoute>} />
+            <Route path="/rtl-form" element={<ProtectedRoute><RtlForm /></ProtectedRoute>} />
+            <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+            
+            <Route path="/quiz-mpi1" element={<ProtectedRoute><QuizMpi1 /></ProtectedRoute>} />
+            <Route path="/quiz-mpi2" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi2} /></ProtectedRoute>} />
+            <Route path="/quiz-mpi3" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi3} /></ProtectedRoute>} />
+            <Route path="/quiz-mpi4" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataMpi4} /></ProtectedRoute>} />
+            <Route path="/quiz-pretest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPreTest} /></ProtectedRoute>} />
+            <Route path="/quiz-posttest" element={<ProtectedRoute><QuizCaseStudy quizData={quizDataPostTest} /></ProtectedRoute>} />
+            <Route path="/penugasan-mpi5" element={<ProtectedRoute><PenugasanMpi5 /></ProtectedRoute>} />
 
-              {/* Admin Routes */}
-              <Route path="/admin-dashboard" element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/manajemen-user" element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <ManajemenUser />
-                </ProtectedRoute>
-              } />
+            {/* Admin Routes */}
+            <Route path="/admin-dashboard" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/manajemen-user" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ManajemenUser />
+              </ProtectedRoute>
+            } />
 
-              {/* Fasilitator & Admin Route */}
-              <Route path="/fasilitator-review" element={
-                <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
-                  <FasilitatorReview />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/panduan-fasilitator" element={
-                <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
-                  <PanduanFasilitator />
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </main>
-          <footer className="footer">
-            <div className="container">
-              <p>&copy; {new Date().getFullYear()} IHT Pelatihan Koding. All rights reserved.</p>
-            </div>
-          </footer>
-        </div>
+            {/* Fasilitator & Admin Route */}
+            <Route path="/fasilitator-review" element={
+              <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
+                <FasilitatorReview />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/panduan-fasilitator" element={
+              <ProtectedRoute allowedRoles={['admin', 'fasilitator']}>
+                <PanduanFasilitator />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </Layout>
       </Router>
     </AuthProvider>
   );
